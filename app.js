@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const userRoute = require('./routes/user');
 
 const app = express();
 
@@ -11,5 +12,7 @@ app.use(express.urlencoded({
 app.get('/', (req, res) => {
     res.send('Gimnasio!')
 })
+
+app.use("/user", userRoute);
 
 module.exports = app;
