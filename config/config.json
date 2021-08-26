@@ -1,38 +1,38 @@
 {
-    "development": {
-      "username": "iaadministrador",
-      "password": "8090fe68",
-      "database": "iagimnasio",
-      "host": "db4free.net",
-      "dialect": "mysql",
-      "dialectOptions": {
-        "multipleStatements": true
-      },
-      "timezone": "America/Buenos_Aires",
-      "operatorsAliases": false
+  "development": {
+    "username": "iaadministrador",
+    "password": "8090fe68",
+    "database": "iagimnasio",
+    "host": "db4free.net",
+    "dialect": "mysql",
+    "dialectOptions": {
+      "multipleStatements": true
     },
-    "test": {
-      "username": "iaadministrador",
-      "password": "8090fe68",
-      "database": "iagimnasio",
-      "host": "db4free.net",
-      "dialect": "mysql",
-      "dialectOptions": {
-        "multipleStatements": true
-      },
-      "timezone": "America/Buenos_Aires",
-      "operatorsAliases": false
+    "timezone": "America/Buenos_Aires",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "iaadministrador",
+    "password": "8090fe68",
+    "database": "iagimnasio",
+    "host": "db4free.net",
+    "dialect": "mysql",
+    "dialectOptions": {
+      "multipleStatements": true
     },
-    "production": {
-      "username": "iaadministrador",
-      "password": "8090fe68",
-      "database": "iagimnasio",
-      "host": "db4free.net",
-      "dialect": "mysql",
-      "dialectOptions": {
-        "multipleStatements": true
-      },
-      "timezone": "America/Buenos_Aires",
-      "operatorsAliases": false
-    }
+    "timezone": "America/Buenos_Aires",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "iaadministrador",
+    "password": "8090fe68",
+    "database": "iagimnasio",
+    "host": "db4free.net",
+    "dialect": "mysql",
+    "dialectOptions": {
+      "multipleStatements": true
+    },
+    "timezone": "America/Buenos_Aires",
+    "operatorsAliases": false
   }
+}
