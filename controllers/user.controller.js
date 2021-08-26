@@ -16,65 +16,39 @@ function createUser(req, res){
         } else {
             bcryptjs.genSalt(10, function(err, salt){
                 bcryptjs.hash(req.body.password, salt, function(err, hash){
-                    console.log(req.body)
+                    var date = moment(req.body.birthday).tz("America/Buenos_Aires");
                     const user = {
                         dni: req.body.dni,
                         name: req.body.name,
                         Surname: req.body.surname,
                         email: req.body.email,
-                        birthday: req.body.birthday,
+                        birthday: date,
                         address: req.body.address,
                         phone: req.body.phone,
                         password: hash
                     }
+                    
                     if(req.body.type == 0) {
                         user.subscriptionID = null
                         user.AppointmentID = null
                         user.healthDataID = null
                         user.type = 0
 
-                        models.User.create(user).then(result => {
-                            console.log(result)
-                            res.status(201).json({
-                                message: "Usuario creado exitosamente",
-                            });
-                        }).catch(error => {
-                            res.status(500).json({
-                                message: "Ocurrio un error!",
-                                error: error
-                            });
-                        });
+                        saveNewUser(models.User, user, res);
+
                     } else if (req.body.type == 1) {
                         user.salaryPerHour = 100
                         user.hoursWorked = 0
                         user.type = 1
 
-                        models.Trainner.create(user).then(result => {
-                            console.log(result)
-                            res.status(201).json({
-                                message: "Entrenador creado exitosamente",
-                            });
-                        }).catch(error => {
-                            res.status(500).json({
-                                message: "Ocurrio un error!",
-                                error: error
-                            });
-                        });
+                        saveNewUser(models.Trainner, user, res);
+
                     } else if (req.body.type == 2){
                         user.salaryPerMonth = 20000
                         user.type = 2
 
-                        models.Admin.create(user).then(result => {
-                            console.log(result)
-                            res.status(201).json({
-                                message: "Admin creado exitosamente",
-                            });
-                        }).catch(error => {
-                            res.status(500).json({
-                                message: "Ocurrio un error!",
-                                error: error
-                            });
-                        });
+                        saveNewUser(models.Admin, user, res);
+
                     } else {
                         res.status(500).json({
                             message: "Ocurrio un error!",
@@ -84,6 +58,20 @@ function createUser(req, res){
                 });
             });
         }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error!",
+            error: error
+        });
+    });
+}
+
+function saveNewUser(model, user, res) {
+    model.create(user).then(result => {
+        res.status(201).json({
+            message: "Cuenta creada exitosamente",
+            data: user
+        });
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
