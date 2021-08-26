@@ -16,12 +16,23 @@ function createUser(req, res){
         } else {
             bcryptjs.genSalt(10, function(err, salt){
                 bcryptjs.hash(req.body.password, salt, function(err, hash){
+                    console.log(req.body)
                     const user = {
                         dni: req.body.dni,
+                        name: req.body.name,
+                        Surname: req.body.surname,
+                        email: req.body.email,
+                        type: 0,
+                        birthday: req.body.birthday,
+                        address: req.body.address,
+                        phone: req.body.phone,
+                        subscriptionID: null,
+                        AppointmentID: null,
+                        healthDataID: null,
                         password: hash
-                        // rellenar con las variables
                     }
                     models.User.create(user).then(result => {
+                        console.log(result)
                         res.status(201).json({
                             message: "Usuario creado exitosamente",
                         });
@@ -76,7 +87,9 @@ function login(req, res){
 }
 
 function getUserData(req, res) {
+    console.log(req.body.dni)
     models.User.findOne({where:{dni:req.body.dni}}).then(user => {
+        console.log(user)
         if(user) {
             res.status(200).json({
                 data: user
