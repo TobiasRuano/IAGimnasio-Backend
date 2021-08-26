@@ -22,26 +22,65 @@ function createUser(req, res){
                         name: req.body.name,
                         Surname: req.body.surname,
                         email: req.body.email,
-                        type: 0,
                         birthday: req.body.birthday,
                         address: req.body.address,
                         phone: req.body.phone,
-                        subscriptionID: null,
-                        AppointmentID: null,
-                        healthDataID: null,
                         password: hash
                     }
-                    models.User.create(user).then(result => {
-                        console.log(result)
-                        res.status(201).json({
-                            message: "Usuario creado exitosamente",
+                    if(req.body.type == 0) {
+                        user.subscriptionID = null
+                        user.AppointmentID = null
+                        user.healthDataID = null
+                        user.type = 0
+
+                        models.User.create(user).then(result => {
+                            console.log(result)
+                            res.status(201).json({
+                                message: "Usuario creado exitosamente",
+                            });
+                        }).catch(error => {
+                            res.status(500).json({
+                                message: "Ocurrio un error!",
+                                error: error
+                            });
                         });
-                    }).catch(error => {
+                    } else if (req.body.type == 1) {
+                        user.salaryPerHour = 100
+                        user.hoursWorked = 0
+                        user.type = 1
+
+                        models.Trainner.create(user).then(result => {
+                            console.log(result)
+                            res.status(201).json({
+                                message: "Entrenador creado exitosamente",
+                            });
+                        }).catch(error => {
+                            res.status(500).json({
+                                message: "Ocurrio un error!",
+                                error: error
+                            });
+                        });
+                    } else if (req.body.type == 2){
+                        user.salaryPerMonth = 20000
+                        user.type = 2
+
+                        models.Admin.create(user).then(result => {
+                            console.log(result)
+                            res.status(201).json({
+                                message: "Admin creado exitosamente",
+                            });
+                        }).catch(error => {
+                            res.status(500).json({
+                                message: "Ocurrio un error!",
+                                error: error
+                            });
+                        });
+                    } else {
                         res.status(500).json({
                             message: "Ocurrio un error!",
-                            error: error
+                            error: "El tipo de usuario a crear no fue dado. 0 para usuario normal, 1 para entrenador, 2 para admin."
                         });
-                    });
+                    }
                 });
             });
         }
