@@ -33,7 +33,7 @@ function createUser(req, res){
                         user.healthDataID = null
                         user.type = 0
 
-                        saveNewUser(models.User, user, res);
+                        saveNewUser(models.User, user, res, "Usuario creado exitosamente!");
 
                     } else if (req.body.type == 1) {
                         user.salaryPerHour = 100
@@ -134,7 +134,7 @@ function getUserData(req, res) {
 }
 
 function getTrainners(req, res) {
-    models.Trainner.findAll().then(result => {
+    models.employee.findAll({where:{type:1}}).then(result => {
         if(result) {
             res.status(200).json({
                 data: result
