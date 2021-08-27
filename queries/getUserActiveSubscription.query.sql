@@ -1,0 +1,1 @@
+select * from UserSubscriptions where userID = :id and endDate > :today

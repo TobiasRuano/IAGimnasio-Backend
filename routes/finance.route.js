@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post('/pay-salary', financeController.calculatePayroll);
 router.post('/new-subscription', financeController.createSubscription);
+router.post('/set-subscription', financeController.setSubscription);
 
 module.exports = router;
