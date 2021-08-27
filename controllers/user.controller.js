@@ -135,8 +135,29 @@ function getUserData(req, res) {
     });
 }
 
+function getTrainners(req, res) {
+    models.Trainner.findAll().then(result => {
+        if(result) {
+            res.status(200).json({
+                data: result
+            });
+        } else {
+            res.status(500).json({
+                message: "Something went wrong!",
+                error: error
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
 module.exports = {
     createUser: createUser,
     login: login,
-    getUserData: getUserData
+    getUserData: getUserData,
+    getTrainners: getTrainners
 } 
