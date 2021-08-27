@@ -6,7 +6,6 @@ const sequelize = require('../models/index.js');
 const fs = require('fs');
 var path = require('path');
 
-//Misma funcion para crear administrativos y profesores?
 function createUser(req, res){
     models.User.findOne({where:{dni:req.body.dni}}).then(result => {
         if(result){
@@ -27,7 +26,7 @@ function createUser(req, res){
                         phone: req.body.phone,
                         password: hash
                     }
-                    
+
                     if(req.body.type == 0) {
                         user.subscriptionID = null
                         user.AppointmentID = null
@@ -41,13 +40,13 @@ function createUser(req, res){
                         user.hoursWorked = 0
                         user.type = 1
 
-                        saveNewUser(models.Trainner, user, res);
+                        saveNewUser(models.employee, user, res, "Entrenador creado exitosamente!");
 
                     } else if (req.body.type == 2){
-                        user.salaryPerMonth = 20000
+                        user.salaryPerHour = 120
                         user.type = 2
 
-                        saveNewUser(models.Admin, user, res);
+                        saveNewUser(models.employee, user, res, "Administrador creado exitosamente!");
 
                     } else {
                         res.status(500).json({
@@ -66,10 +65,10 @@ function createUser(req, res){
     });
 }
 
-function saveNewUser(model, user, res) {
+function saveNewUser(model, user, res, mes) {
     model.create(user).then(result => {
         res.status(201).json({
-            message: "Cuenta creada exitosamente",
+            message: mes,
             data: user
         });
     }).catch(error => {
@@ -113,10 +112,9 @@ function login(req, res){
     });
 }
 
+// juntar con descripcion medica
 function getUserData(req, res) {
-    console.log(req.body.dni)
     models.User.findOne({where:{dni:req.body.dni}}).then(user => {
-        console.log(user)
         if(user) {
             res.status(200).json({
                 data: user
