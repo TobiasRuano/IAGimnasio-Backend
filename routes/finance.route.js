@@ -4,6 +4,7 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
-router.post('/paySalary', financeController.calculatePayroll);
+router.post('/pay-salary', financeController.calculatePayroll);
+router.post('/new-subscription', financeController.createSubscription);
 
 module.exports = router;

@@ -16,9 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Subscription.init({
     type: DataTypes.STRING,
     length: DataTypes.INTEGER,
-    price: DataTypes.DOUBLE,
-    start: DataTypes.DATEONLY,
-    end: DataTypes.DATEONLY
+    price: DataTypes.DOUBLE
   }, {
     sequelize,
     modelName: 'Subscription',
