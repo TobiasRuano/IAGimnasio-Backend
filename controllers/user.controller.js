@@ -45,6 +45,7 @@ function createUser(req, res){
                     } else if (req.body.type == 2){
                         user.salaryPerHour = 120
                         user.type = 2
+                        user.hoursWorked = 160
 
                         saveNewUser(models.employee, user, res, "Administrador creado exitosamente!");
 

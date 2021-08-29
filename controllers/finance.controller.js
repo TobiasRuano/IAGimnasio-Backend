@@ -44,7 +44,7 @@ function createSubscription(req, res) {
     });
 }
 
-// subscribir un usuario a un abono especifico
+// TODO: implementar pago de la subscripcion
 function setSubscription(req, res) {
     models.User.findOne({where:{dni:req.body.dni}}).then(user => {
         if(user) {
@@ -105,26 +105,38 @@ function setSubscription(req, res) {
     });
 }
 
-//TODO: liquidar sueldo
 function calculatePayroll(req, res) {
     models.employee.findOne({where:{dni:req.body.dni}}).then(employee => {
         if(employee) {
-            if(employee.type == 2) {
-                employee.hoursWorked = 160
+            const sueldoTotal = employee.hoursWorked * employee.salaryPerHour;
+            const jubilacion = sueldoTotal * 0.11;
+            const obraSocial = sueldoTotal * 0.03;
+            const pami = sueldoTotal * 0.03;
+
+            const salario = {
+                date: getCurrentDate(),
+                period: req.body.periodo,
+                employeeID: employee.id,
+                jubilacion: jubilacion,
+                obraSocial: obraSocial,
+                pami: pami,
+                total: (sueldoTotal - jubilacion - obraSocial - pami)
             }
 
-            //TODO: liquidar sueldo
-
-            const sueldo = employee.hoursWorked * employee.salaryPerHour
-            res.status(200).json({
-                message: "Sueldo liquidado para el trabador!",
-                sueldo: sueldo
+            models.Wages.create(salario).then(result => {
+                res.status(200).json({
+                    message: "Sueldo liquidado para el trabador!",
+                    sueldo: result
+                });
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Hubo un error al liquidar el sueldo.",
+                    error: error
+                });
             });
-            
         } else {
-            res.status(500).json({
-                message: "Something went wrong!",
-                error: error
+            res.status(404).json({
+                message: "No existe un empleado para ese ID."
             });
         }
     }).catch(error => {

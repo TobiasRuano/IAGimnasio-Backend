@@ -8,7 +8,7 @@
     "dialectOptions": {
       "multipleStatements": true
     },
-    "timezone": "America/Buenos_Aires",
+    "timezone": "-03:00",
     "operatorsAliases": false
   },
   "test": {
@@ -20,7 +20,7 @@
     "dialectOptions": {
       "multipleStatements": true
     },
-    "timezone": "America/Buenos_Aires",
+    "timezone": "-03:00",
     "operatorsAliases": false
   },
   "production": {
@@ -32,7 +32,7 @@
     "dialectOptions": {
       "multipleStatements": true
     },
-    "timezone": "America/Buenos_Aires",
+    "timezone": "-03:00",
     "operatorsAliases": false
   }
 }
