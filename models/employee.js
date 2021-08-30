@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     hoursWorked: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'employee',
+    modelName: 'Employee',
   });
   return employee;
 };

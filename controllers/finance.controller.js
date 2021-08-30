@@ -58,8 +58,9 @@ function setSubscription(req, res) {
                 } else {
                     models.Subscription.findOne({where:{id:req.body.subscriptionID}}).then(subscriptionInfo => {
                         if(subscriptionInfo) {
+                            // TODO: esto deberia ser una transaccion con el pago dentro
                             var start = getCurrentDate();
-                            var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');;
+                            var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');
                             const newUserSubscription = {
                                 subscriptionID: subscriptionInfo.id,
                                 userID: user.id,
@@ -103,6 +104,10 @@ function setSubscription(req, res) {
             error: error
         });
     });
+}
+
+function payForSubscription(req, res) {
+
 }
 
 function calculatePayroll(req, res) {
