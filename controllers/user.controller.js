@@ -40,14 +40,14 @@ function createUser(req, res){
                         user.hoursWorked = 0
                         user.type = 1
 
-                        saveNewUser(models.employee, user, res, "Entrenador creado exitosamente!");
+                        saveNewUser(models.Employee, user, res, "Entrenador creado exitosamente!");
 
                     } else if (req.body.type == 2){
                         user.salaryPerHour = 120
                         user.type = 2
                         user.hoursWorked = 160
 
-                        saveNewUser(models.employee, user, res, "Administrador creado exitosamente!");
+                        saveNewUser(models.Employee, user, res, "Administrador creado exitosamente!");
 
                     } else {
                         res.status(500).json({
@@ -135,7 +135,27 @@ function getUserData(req, res) {
 }
 
 function getTrainners(req, res) {
-    models.employee.findAll({where:{type:1}}).then(result => {
+    models.Employee.findAll({where:{type:1}}).then(result => {
+        if(result) {
+            res.status(200).json({
+                data: result
+            });
+        } else {
+            res.status(500).json({
+                message: "Something went wrong!",
+                error: error
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
+function getEmployees(req, res) {
+    models.Employee.findAll().then(result => {
         if(result) {
             res.status(200).json({
                 data: result
@@ -158,5 +178,6 @@ module.exports = {
     createUser: createUser,
     login: login,
     getUserData: getUserData,
-    getTrainners: getTrainners
+    getTrainners: getTrainners,
+    getEmployees: getEmployees
 } 

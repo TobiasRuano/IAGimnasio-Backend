@@ -5,8 +5,7 @@ const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 router.post('/new', appointmentController.createNewAppointments);
-router.post('/set-appointment', appointmentController.setAppointment);
-router.post('/get-available-trainner', appointmentController.getTrainnerAvailableAppointments);
+router.post('/get-trainner-clases', appointmentController.getTrainnerAvailableAppointments);
 router.get('/get-clases', appointmentController.getFutureClases);
 router.post('/set', appointmentController.setAppointment);
 

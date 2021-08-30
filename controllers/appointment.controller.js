@@ -18,11 +18,9 @@ function createNewAppointments(req, res) {
         const promises = []
           
         for (let i = 0; i < appointmentSchedule.length; i++) {
-            console.log(appointmentSchedule.length);
             var start = moment(appointmentSchedule[i], "YYYY-MM-DD hh:mm:ss");
             var end = moment(start, "YYYY-MM-DD hh:mm:ss").add(1, 'hours');
             const ind = req.body.cupos == 1 ? true : false;
-            console.log(ind);
             const newAppointment = {
                 name: req.body.nombre,
                 dateTimeStart: start,
@@ -31,7 +29,6 @@ function createNewAppointments(req, res) {
                 trainnerID: req.body.profesor,
                 isIndividual: ind
             }
-            console.log(newAppointment.name);
             const promise = models.Appointment.create(newAppointment, { transaction: t })
             promises.push(promise)
         }
