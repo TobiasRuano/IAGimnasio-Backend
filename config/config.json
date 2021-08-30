@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "iaadministrador",
-    "password": "8090fe68",
-    "database": "iagimnasio",
-    "host": "db4free.net",
+    "username": "TzRPRnYo5K",
+    "password": "Pe7nAVVC6k",
+    "database": "TzRPRnYo5K",
+    "host": "remotemysql.com",
     "dialect": "mysql",
     "dialectOptions": {
       "multipleStatements": true

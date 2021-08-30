@@ -1,30 +1,18 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Appointments', {
+    await queryInterface.createTable('UserAppointments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING
-      },
-      dateTimeStart: {
-        type: Sequelize.DATE
-      },
-      dateTimeEnd: {
-        type: Sequelize.DATE
-      },
-      availableSlots: {
+      appointmentID: {
         type: Sequelize.INTEGER
       },
-      trainnerID: {
+      userID: {
         type: Sequelize.INTEGER
-      },
-      isIndividual: {
-        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -37,6 +25,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Appointments');
+    await queryInterface.dropTable('UserAppointments');
   }
 };
