@@ -6,6 +6,11 @@ const sequelize = require('../models/index.js');
 const fs = require('fs');
 var path = require('path');
 
+function getCurrentDate() {
+    var date = moment().tz("America/Buenos_Aires").format('YYYY-MM-DD');;
+    return date;
+}
+
 function createUser(req, res){
     models.User.findOne({where:{dni:req.body.dni}}).then(result => {
         if(result){
@@ -134,6 +139,60 @@ function getUserData(req, res) {
     });
 }
 
+function setHealthRecord(req, res) {
+    models.User.findOne({where:{id:req.body.userID}}).then(user => {
+        if(user) {
+            const record = {
+                userID: user.id,
+                data: req.body.data,
+                medicalDischarge: req.body.medicalDischarge,
+                medicalDischargeDate: getCurrentDate()
+            }
+            models.HealthRecords.findOne({where:{userID:user.id}}).then(result => {
+                if(result) {
+                    models.HealthRecords.update(record, {where:{id:result.id}}).then(result2 => {
+                        res.status(200).json({
+                            message: "Informacion medica actualizada!",
+                            data: result2
+                        });
+                    }).catch(error => {
+                        res.status(500).json({
+                            message: "Ocurrio un error!",
+                            error: error
+                        });
+                    });
+                } else {
+                    models.HealthRecords.create(record).then(result3 => {
+                        res.status(200).json({
+                            message: "Informacion medica actualizada!",
+                            data: result3
+                        });
+                    }).catch(error => {
+                        res.status(500).json({
+                            message: "Ocurrio un error!",
+                            error: error
+                        });
+                    });
+                }
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Ocurrio un error!",
+                    error: error
+                });
+            });
+        } else {
+            res.status(500).json({
+                message: "No existe un usuario con el ID dado"
+            });
+        }
+    }).catch(error =>{
+        res.status(500).json({
+            message: "Ocurrio un error!",
+            error: error
+        });
+    });
+}
+
 function getTrainners(req, res) {
     models.Employee.findAll({where:{type:1}}).then(result => {
         if(result) {
@@ -179,5 +238,6 @@ module.exports = {
     login: login,
     getUserData: getUserData,
     getTrainners: getTrainners,
-    getEmployees: getEmployees
+    getEmployees: getEmployees,
+    setHealthRecord: setHealthRecord
 } 

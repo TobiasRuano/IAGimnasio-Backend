@@ -9,5 +9,6 @@ router.post('/', userController.getUserData);
 router.post('/login', userController.login);
 router.get('/trainners', userController.getTrainners);
 router.get('/employees', userController.getEmployees);
+router.post('/set-health-record', userController.setHealthRecord);
 
 module.exports = router;
