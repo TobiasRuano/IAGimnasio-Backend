@@ -142,19 +142,21 @@ function getUserData(req, res) {
 function setHealthRecord(req, res) {
     models.User.findOne({where:{id:req.body.userID}}).then(user => {
         if(user) {
+            var date = null;
+            if(req.body.medicalDischarge == true) {
+                date = getCurrentDate();
+            }
             const record = {
                 userID: user.id,
                 data: req.body.data,
                 medicalDischarge: req.body.medicalDischarge,
-                medicalDischargeDate: getCurrentDate()
+                medicalDischargeDate: date
             }
+
             models.HealthRecords.findOne({where:{userID:user.id}}).then(result => {
                 if(result) {
                     models.HealthRecords.update(record, {where:{id:result.id}}).then(result2 => {
-                        res.status(200).json({
-                            message: "Informacion medica actualizada!",
-                            data: result2
-                        });
+                        updateHealthRecordIDUserModel(result, user, res);
                     }).catch(error => {
                         res.status(500).json({
                             message: "Ocurrio un error!",
@@ -163,10 +165,7 @@ function setHealthRecord(req, res) {
                     });
                 } else {
                     models.HealthRecords.create(record).then(result3 => {
-                        res.status(200).json({
-                            message: "Informacion medica actualizada!",
-                            data: result3
-                        });
+                        updateHealthRecordIDUserModel(result3, user, res);
                     }).catch(error => {
                         res.status(500).json({
                             message: "Ocurrio un error!",
@@ -188,6 +187,20 @@ function setHealthRecord(req, res) {
     }).catch(error =>{
         res.status(500).json({
             message: "Ocurrio un error!",
+            error: error
+        });
+    });
+}
+
+function updateHealthRecordIDUserModel(result, user, res) {
+    models.User.update({healthDataID:result.id}, {where:{id:user.id}}).then(result4 => {
+        res.status(200).json({
+            message: "Informacion medica actualizada!",
+            data: result4
+        });
+    }).catch(error => {
+        res.status(200).json({
+            message: "Hubo un error al actualizar la informacion!",
             error: error
         });
     });
