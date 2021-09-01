@@ -6,11 +6,12 @@ const fs = require('fs');
 var path = require('path');
 
 function getCurrentDate() {
-    var date = moment().tz("America/Buenos_Aires").format('YYYY-MM-DD');;
+    var date = moment().tz("America/Buenos_Aires").format('YYYY-MM-DD HH:mm:ss');
     return date;
 }
 
 // TODO: chequear profesor una solo clase por hora
+// TODO: iterar cantidad de veces a repetir
 function createNewAppointments(req, res) {
     const appointmentSchedule = req.body.horarios;
     return sequelize.sequelize.transaction(t => {
@@ -32,7 +33,6 @@ function createNewAppointments(req, res) {
             const promise = models.Appointment.create(newAppointment, { transaction: t })
             promises.push(promise)
         }
-          
         return Promise.all(promises)
       
     }).then(result => {
@@ -58,6 +58,28 @@ function getTrainnerAvailableAppointments(req, res) {
         } else {
             res.status(404).json({
                 message: "El entrenador no posee clases!"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error!",
+            error: error
+        });
+    });
+}
+
+function getTrainnerTodaysAppointmens(req, res) {
+    const startDate = moment().startOf('day')
+    const endDate = moment(startDate, "YYYY-MM-DD hh:mm:ss").add(1, 'day');
+
+    models.Appointment.findAll({where:{trainnerID:req.body.trainnerID, dateTimeStart: { [Op.gt]: startDate , [Op.lt]: endDate}}}).then(result => {
+        if(result.length != 0) {
+            res.status(200).json({
+                data: result
+            });
+        } else {
+            res.status(404).json({
+                message: "El entrenador no posee clases para el dia de la fecha!"
             });
         }
     }).catch(error => {
@@ -140,6 +162,7 @@ function setAppointment(req, res) {
 module.exports = {
     createNewAppointments: createNewAppointments,
     getTrainnerAvailableAppointments: getTrainnerAvailableAppointments,
+    getTrainnerTodaysAppointmens: getTrainnerTodaysAppointmens,
     setAppointment: setAppointment,
     getFutureClases: getFutureClases
 } 
