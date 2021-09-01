@@ -20,6 +20,12 @@ module.exports = {
       endDate: {
         type: Sequelize.DATEONLY
       },
+      paymentMethod: {
+        type: Sequelize.STRING
+      },
+      receiptNumber: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

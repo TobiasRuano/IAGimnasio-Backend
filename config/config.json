@@ -9,7 +9,7 @@
       "multipleStatements": true
     },
     "timezone": "-03:00",
-    "operatorsAliases": false
+    "operatorsAliases": 0
   },
   "test": {
     "username": "iaadministrador",
@@ -21,7 +21,7 @@
       "multipleStatements": true
     },
     "timezone": "-03:00",
-    "operatorsAliases": false
+    "operatorsAliases": 0
   },
   "production": {
     "username": "iaadministrador",
@@ -33,6 +33,6 @@
       "multipleStatements": true
     },
     "timezone": "-03:00",
-    "operatorsAliases": false
+    "operatorsAliases": 0
   }
 }

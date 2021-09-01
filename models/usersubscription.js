@@ -17,7 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     subscriptionID: DataTypes.INTEGER,
     userID: DataTypes.INTEGER,
     startDate: DataTypes.DATEONLY,
-    endDate: DataTypes.DATEONLY
+    endDate: DataTypes.DATEONLY,
+    paymentMethod: DataTypes.STRING,
+    receiptNumber: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'UserSubscription',
