@@ -131,10 +131,10 @@ function calculatePayroll(req, res) {
             const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
             const end = moment(req.body.fechaFin, "YYYY-MM-DD hh:mm:ss");
 
-            models.Wages.findAll({where:{employeeID:employee.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}).then( result => {
-                if(result.length == 0) {
+            models.Wages.findOne({where:{employeeID:employee.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}).then( result => {
+                if(!result) {
                     if(employee.type == 1) {
-                        getHoursWorked(employee.id, req.body.fechaInicio, req.body.fechaFin).then(async hoursWorked => {
+                        getHoursWorked(employee.id, start, end).then(async hoursWorked => {
                             paySalary(req, hoursWorked * employee.salaryPerHour, employee, start, end, res);
                         });
                     } else {
@@ -193,11 +193,8 @@ function paySalary(req, sueldoTotal, employee, start, end, res) {
     });
 }
 
-function getHoursWorked(trainnerID, startDate, endDate) {
+function getHoursWorked(trainnerID, start, end) {
     return new Promise((resolve, reject) => {
-        const start = moment(startDate, "YYYY-MM-DD hh:mm:ss");
-        const end = moment(endDate, "YYYY-MM-DD hh:mm:ss");
-
         models.Appointment.findAll({where:{trainnerID:trainnerID, dateTimeStart: { [Op.gt]: start , [Op.lt]: end}}}).then(result => {
             resolve(result.length);
         }).catch(error => {
