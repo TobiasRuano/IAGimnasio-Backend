@@ -118,7 +118,7 @@ function login(req, res){
     });
 }
 
-// juntar con descripcion medica
+// TODO: juntar con descripcion medica
 function getUserData(req, res) {
     models.User.findOne({where:{dni:req.body.dni}}).then(user => {
         if(user) {

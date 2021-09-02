@@ -1,6 +1,7 @@
 const models = require('../models');
 const moment = require('moment');
 const sequelize = require('../models/index.js');
+const { Op } = require("sequelize");
 const fs = require('fs');
 var path = require('path');
 const { start } = require('repl');
@@ -44,7 +45,6 @@ function createSubscription(req, res) {
     });
 }
 
-// TODO: implementar pago de la subscripcion
 function setSubscription(req, res) {
     models.User.findOne({where:{dni:req.body.dni}}).then(user => {
         if(user) {
@@ -58,39 +58,31 @@ function setSubscription(req, res) {
                 } else {
                     models.Subscription.findOne({where:{id:req.body.subscriptionID}}).then(subscriptionInfo => {
                         if(subscriptionInfo) {
-                            // TODO: esto deberia ser una transaccion con el pago dentro
-                            paySubscription(req.body.metodoPago).then(reciptNumber => {
-                                var start = getCurrentDate();
-                                var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');
-
-                                var tipo = "Efectivo";
-                                if(req.body.metodoPago.tipo == 1) {
-                                    tipo = "Tarjeta credito / debito";
-                                }
-
-                                const newUserSubscription = {
-                                    subscriptionID: subscriptionInfo.id,
-                                    userID: user.id,
-                                    receiptNumber: reciptNumber,
-                                    paymentMethod: tipo,
-                                    startDate: start,
-                                    endDate: end
-                                }
-                                
-                                models.UserSubscription.create(newUserSubscription).then(result => {
-                                    res.status(201).json({
-                                        message: "Abono creado correctamente!",
-                                        data: result
-                                    });
-                                }).catch(error => {
-                                    res.status(500).json({
-                                        message: "Error al crear el abono",
-                                        error: error
-                                    });
+                            var start = getCurrentDate();
+                            var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');
+                            var tipo = "Efectivo";
+                            var comprobante = "";
+                            if(req.body.metodoPago.tipo == 1) {
+                                tipo = "Tarjeta credito / debito";
+                                comprobante = req.body.metodoPago.comprobante;
+                            }
+                            const newUserSubscription = {
+                                subscriptionID: subscriptionInfo.id,
+                                userID: user.id,
+                                receiptNumber: comprobante,
+                                paymentMethod: tipo,
+                                startDate: start,
+                                endDate: end
+                            }
+                            
+                            models.UserSubscription.create(newUserSubscription).then(result => {
+                                res.status(201).json({
+                                    message: "Abono creado correctamente!",
+                                    data: result
                                 });
                             }).catch(error => {
                                 res.status(500).json({
-                                    message: "Error al intenar abonar la subscripcion",
+                                    message: "Error al crear el abono",
                                     error: error
                                 });
                             });
@@ -131,32 +123,31 @@ async function paySubscription(metodo, res) {
     }
 }
 
+// periodo fecha de inicio y fecha de fin id
 function calculatePayroll(req, res) {
-    models.employee.findOne({where:{dni:req.body.dni}}).then(employee => {
+    models.Employee.findOne({where:{id:req.body.id}}).then(employee => {
         if(employee) {
-            const sueldoTotal = employee.hoursWorked * employee.salaryPerHour;
-            const jubilacion = sueldoTotal * 0.11;
-            const obraSocial = sueldoTotal * 0.03;
-            const pami = sueldoTotal * 0.03;
 
-            const salario = {
-                date: getCurrentDate(),
-                period: req.body.periodo,
-                employeeID: employee.id,
-                jubilacion: jubilacion,
-                obraSocial: obraSocial,
-                pami: pami,
-                total: (sueldoTotal - jubilacion - obraSocial - pami)
-            }
+            const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
+            const end = moment(req.body.fechaFin, "YYYY-MM-DD hh:mm:ss");
 
-            models.Wages.create(salario).then(result => {
-                res.status(200).json({
-                    message: "Sueldo liquidado para el trabador!",
-                    sueldo: result
-                });
+            models.Wages.findOne({where:{employeeID:employee.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}).then( result => {
+                if(!result) {
+                    if(employee.type == 1) {
+                        getHoursWorked(employee.id, start, end).then(async hoursWorked => {
+                            paySalary(req, hoursWorked * employee.salaryPerHour, employee, start, end, res);
+                        });
+                    } else {
+                        paySalary(req, employee.hoursWorked * employee.salaryPerHour, employee, start, end, res);
+                    }
+                } else {
+                    res.status(500).json({
+                        message: "Ya se liquido el sueldo para el trabajador en el periodo deseado."
+                    });
+                }
             }).catch(error => {
                 res.status(500).json({
-                    message: "Hubo un error al liquidar el sueldo.",
+                    message: "Something went wrong!",
                     error: error
                 });
             });
@@ -171,6 +162,45 @@ function calculatePayroll(req, res) {
             error: error
         });
     });
+}
+
+function paySalary(req, sueldoTotal, employee, start, end, res) {
+    const jubilacion = sueldoTotal * 0.11;
+    const obraSocial = sueldoTotal * 0.03;
+    const pami = sueldoTotal * 0.03;
+
+    const salario = {
+        date: getCurrentDate(),
+        dateStart: start,
+        dateEnd: end,
+        employeeID: employee.id,
+        jubilacion: jubilacion,
+        obraSocial: obraSocial,
+        pami: pami,
+        total: (sueldoTotal - jubilacion - obraSocial - pami)
+    }      
+
+    models.Wages.create(salario).then(result => {
+        res.status(200).json({
+            message: "Sueldo liquidado para el trabador!",
+            sueldo: result
+        });
+    }).catch(error => {
+        res.status(500).json({
+            message: "Hubo un error al liquidar el sueldo.",
+            error: error
+        });
+    });
+}
+
+function getHoursWorked(trainnerID, start, end) {
+    return new Promise((resolve, reject) => {
+        models.Appointment.findAll({where:{trainnerID:trainnerID, dateTimeStart: { [Op.gt]: start , [Op.lt]: end}}}).then(result => {
+            resolve(result.length);
+        }).catch(error => {
+            reject();
+        });
+    })
 }
 
 

@@ -15,12 +15,13 @@ module.exports = (sequelize, DataTypes) => {
   };
   Wages.init({
     date: DataTypes.DATE,
-    period: DataTypes.STRING,
     employeeID: DataTypes.INTEGER,
     jubilacion: DataTypes.DOUBLE,
     obraSocial: DataTypes.DOUBLE,
     pami: DataTypes.DOUBLE,
-    total: DataTypes.DOUBLE
+    total: DataTypes.DOUBLE,
+    dateStart: DataTypes.DATE,
+    dateEnd: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Wages',

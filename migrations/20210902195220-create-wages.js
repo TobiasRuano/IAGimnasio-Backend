@@ -11,9 +11,6 @@ module.exports = {
       date: {
         type: Sequelize.DATE
       },
-      period: {
-        type: Sequelize.STRING
-      },
       employeeID: {
         type: Sequelize.INTEGER
       },
@@ -28,6 +25,12 @@ module.exports = {
       },
       total: {
         type: Sequelize.DOUBLE
+      },
+      dateStart: {
+        type: Sequelize.DATE
+      },
+      dateEnd: {
+        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,
