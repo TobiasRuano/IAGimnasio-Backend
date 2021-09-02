@@ -127,15 +127,30 @@ async function paySubscription(metodo, res) {
 function calculatePayroll(req, res) {
     models.Employee.findOne({where:{id:req.body.id}}).then(employee => {
         if(employee) {
-            if(employee.type == 1) {
-                getHoursWorked(employee.id, req.body.fechaInicio, req.body.fechaFin).then(async hoursWorked => {
-                    console.log("El valor de hoursWorked es: ")
-                    console.log(hoursWorked);
-                    paySalary(req, hoursWorked * employee.salaryPerHour, employee, res);
+
+            const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
+            const end = moment(req.body.fechaFin, "YYYY-MM-DD hh:mm:ss");
+
+            models.Wages.findAll({where:{employeeID:employee.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}).then( result => {
+                if(result.length == 0) {
+                    if(employee.type == 1) {
+                        getHoursWorked(employee.id, req.body.fechaInicio, req.body.fechaFin).then(async hoursWorked => {
+                            paySalary(req, hoursWorked * employee.salaryPerHour, employee, start, end, res);
+                        });
+                    } else {
+                        paySalary(req, employee.hoursWorked * employee.salaryPerHour, employee, start, end, res);
+                    }
+                } else {
+                    res.status(500).json({
+                        message: "Ya se liquido el sueldo para el trabajador en el periodo deseado."
+                    });
+                }
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Something went wrong!",
+                    error: error
                 });
-            } else {
-                paySalary(req, employee.hoursWorked * employee.salaryPerHour, employee, res);
-            }
+            });
         } else {
             res.status(404).json({
                 message: "No existe un empleado para ese ID."
@@ -149,14 +164,15 @@ function calculatePayroll(req, res) {
     });
 }
 
-function paySalary(req, sueldoTotal, employee, res) {
+function paySalary(req, sueldoTotal, employee, start, end, res) {
     const jubilacion = sueldoTotal * 0.11;
     const obraSocial = sueldoTotal * 0.03;
     const pami = sueldoTotal * 0.03;
 
     const salario = {
         date: getCurrentDate(),
-        period: req.body.periodo,
+        dateStart: start,
+        dateEnd: end,
         employeeID: employee.id,
         jubilacion: jubilacion,
         obraSocial: obraSocial,
@@ -164,11 +180,6 @@ function paySalary(req, sueldoTotal, employee, res) {
         total: (sueldoTotal - jubilacion - obraSocial - pami)
     }      
 
-    res.status(200).json({
-        message: "Sueldo liquidado para el trabador!",
-        sueldo: salario
-    });
-    /*
     models.Wages.create(salario).then(result => {
         res.status(200).json({
             message: "Sueldo liquidado para el trabador!",
@@ -179,17 +190,20 @@ function paySalary(req, sueldoTotal, employee, res) {
             message: "Hubo un error al liquidar el sueldo.",
             error: error
         });
-    });*/
+    });
 }
 
 function getHoursWorked(trainnerID, startDate, endDate) {
-    const start = moment(startDate, "YYYY-MM-DD hh:mm:ss");
-    const end = moment(endDate, "YYYY-MM-DD hh:mm:ss");
+    return new Promise((resolve, reject) => {
+        const start = moment(startDate, "YYYY-MM-DD hh:mm:ss");
+        const end = moment(endDate, "YYYY-MM-DD hh:mm:ss");
 
-    models.Appointment.findAll({where:{trainnerID:trainnerID, dateTimeStart: { [Op.gt]: start , [Op.lt]: end}}}).then(result => {
-        console.log(result.length)
-        return result.length
-    });
+        models.Appointment.findAll({where:{trainnerID:trainnerID, dateTimeStart: { [Op.gt]: start , [Op.lt]: end}}}).then(result => {
+            resolve(result.length);
+        }).catch(error => {
+            reject();
+        });
+    })
 }
 
 
