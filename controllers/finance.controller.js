@@ -45,7 +45,6 @@ function createSubscription(req, res) {
     });
 }
 
-// TODO: Transaccions pago de la subscripcion
 function setSubscription(req, res) {
     models.User.findOne({where:{dni:req.body.dni}}).then(user => {
         if(user) {
@@ -59,39 +58,31 @@ function setSubscription(req, res) {
                 } else {
                     models.Subscription.findOne({where:{id:req.body.subscriptionID}}).then(subscriptionInfo => {
                         if(subscriptionInfo) {
-                            // TODO: esto deberia ser una transaccion con el pago dentro
-                            paySubscription(req.body.metodoPago).then(reciptNumber => {
-                                var start = getCurrentDate();
-                                var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');
-
-                                var tipo = "Efectivo";
-                                if(req.body.metodoPago.tipo == 1) {
-                                    tipo = "Tarjeta credito / debito";
-                                }
-
-                                const newUserSubscription = {
-                                    subscriptionID: subscriptionInfo.id,
-                                    userID: user.id,
-                                    receiptNumber: reciptNumber,
-                                    paymentMethod: tipo,
-                                    startDate: start,
-                                    endDate: end
-                                }
-                                
-                                models.UserSubscription.create(newUserSubscription).then(result => {
-                                    res.status(201).json({
-                                        message: "Abono creado correctamente!",
-                                        data: result
-                                    });
-                                }).catch(error => {
-                                    res.status(500).json({
-                                        message: "Error al crear el abono",
-                                        error: error
-                                    });
+                            var start = getCurrentDate();
+                            var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');
+                            var tipo = "Efectivo";
+                            var comprobante = "";
+                            if(req.body.metodoPago.tipo == 1) {
+                                tipo = "Tarjeta credito / debito";
+                                comprobante = req.body.metodoPago.comprobante;
+                            }
+                            const newUserSubscription = {
+                                subscriptionID: subscriptionInfo.id,
+                                userID: user.id,
+                                receiptNumber: comprobante,
+                                paymentMethod: tipo,
+                                startDate: start,
+                                endDate: end
+                            }
+                            
+                            models.UserSubscription.create(newUserSubscription).then(result => {
+                                res.status(201).json({
+                                    message: "Abono creado correctamente!",
+                                    data: result
                                 });
                             }).catch(error => {
                                 res.status(500).json({
-                                    message: "Error al intenar abonar la subscripcion",
+                                    message: "Error al crear el abono",
                                     error: error
                                 });
                             });
