@@ -129,7 +129,7 @@ function calculatePayroll(req, res) {
         if(employee) {
 
             const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
-            const end = moment(req.body.fechaFin, "YYYY-MM-DD hh:mm:ss");
+            var end = moment(start, "YYYY-MM-DD").add(30, 'days');
 
             models.Wages.findOne({where:{employeeID:employee.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}).then( result => {
                 if(!result) {
@@ -195,8 +195,8 @@ function paySalary(req, sueldoTotal, employee, start, end, res) {
 
 function getHoursWorked(trainnerID, start, end) {
     return new Promise((resolve, reject) => {
-        models.Appointment.findAll({where:{trainnerID:trainnerID, dateTimeStart: { [Op.gt]: start , [Op.lt]: end}}}).then(result => {
-            resolve(result.length);
+        models.Appointment.findAll({where:{trainnerID:trainnerID}}).then(result => {
+            resolve(result.length * 12); // promedio de 3 clases por semana * 4 semanas
         }).catch(error => {
             reject();
         });

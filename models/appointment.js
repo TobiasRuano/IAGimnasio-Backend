@@ -15,11 +15,9 @@ module.exports = (sequelize, DataTypes) => {
   };
   Appointment.init({
     name: DataTypes.STRING,
-    dateTimeStart: DataTypes.DATE,
-    dateTimeEnd: DataTypes.DATE,
-    availableSlots: DataTypes.INTEGER,
     trainnerID: DataTypes.INTEGER,
-    isIndividual: DataTypes.BOOLEAN
+    description: DataTypes.STRING,
+    schedule: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Appointment',
