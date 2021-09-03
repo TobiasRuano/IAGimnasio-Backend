@@ -203,9 +203,29 @@ function getHoursWorked(trainnerID, start, end) {
     })
 }
 
+function getSubscriptions(req, res) {
+    models.Subscription.findAll().then(result => {
+        if(result) {
+            res.status(200).json({
+                data: result
+            });
+        } else {
+            res.status(500).json({
+                message: "No hay abonos creados!"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error!",
+            error: error
+        });
+    });
+}
+
 
 module.exports = {
     createSubscription: createSubscription,
     setSubscription: setSubscription,
-    calculatePayroll: calculatePayroll
+    calculatePayroll: calculatePayroll,
+    getSubscriptions: getSubscriptions
 } 
