@@ -131,7 +131,7 @@ function calculatePayroll(req, res) {
             const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
             var end = moment(start, "YYYY-MM-DD").add(30, 'days');
 
-            models.Wages.findOne({where:{employeeID:employee.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}).then( result => {
+            models.Wages.findOne({where:{employeeID:employee.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: start}}}).then( result => {
                 if(!result) {
                     if(employee.type == 1) {
                         getHoursWorked(employee.id, start, end).then(async hoursWorked => {
