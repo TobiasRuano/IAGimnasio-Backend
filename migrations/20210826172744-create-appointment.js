@@ -11,20 +11,14 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      dateTimeStart: {
-        type: Sequelize.DATE
-      },
-      dateTimeEnd: {
-        type: Sequelize.DATE
-      },
-      availableSlots: {
-        type: Sequelize.INTEGER
-      },
       trainnerID: {
         type: Sequelize.INTEGER
       },
-      isIndividual: {
-        type: Sequelize.BOOLEAN
+      description: {
+        type: Sequelize.STRING
+      },
+      schedule: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

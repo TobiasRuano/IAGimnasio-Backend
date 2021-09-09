@@ -24,7 +24,7 @@ function createUser(req, res){
                     const user = {
                         dni: req.body.dni,
                         name: req.body.name,
-                        Surname: req.body.surname,
+                        surname: req.body.surname,
                         email: req.body.email,
                         birthday: date,
                         address: req.body.address,
