@@ -139,6 +139,25 @@ function getUserData(req, res) {
     });
 }
 
+function getAllUsers(req, res) {
+    models.User.findAll().then(result => {
+        if(result) {
+            res.status(200).json({
+                data: result
+            });
+        } else {
+            res.status(500).json({
+                message: "No users!"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
 function setHealthRecord(req, res) {
     models.User.findOne({where:{id:req.body.userID}}).then(user => {
         if(user) {
@@ -250,6 +269,7 @@ module.exports = {
     createUser: createUser,
     login: login,
     getUserData: getUserData,
+    getAllUsers: getAllUsers,
     getTrainners: getTrainners,
     getEmployees: getEmployees,
     setHealthRecord: setHealthRecord
