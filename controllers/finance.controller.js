@@ -48,7 +48,7 @@ function createSubscription(req, res) {
 
 function deleteSubscriptions(req, res) {
     models.Subscription.destroy({where: {id: req.body.id}}).then(result => {
-        if(result == 0) {
+        if(result == true) {
             res.status(200).json({
                 message: "Abono eliminado correctamente!"
             });
