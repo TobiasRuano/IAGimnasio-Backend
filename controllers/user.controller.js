@@ -147,7 +147,7 @@ function getAllUsers(req, res) {
             });
         } else {
             res.status(500).json({
-                message: "No users!"
+                message: "Ocurrio un error!"
             });
         }
     }).catch(error => {
@@ -233,7 +233,7 @@ function getTrainners(req, res) {
             });
         } else {
             res.status(500).json({
-                message: "Something went wrong!",
+                message: "Ocurrio un error!",
                 error: error
             });
         }
@@ -253,8 +253,7 @@ function getEmployees(req, res) {
             });
         } else {
             res.status(500).json({
-                message: "Something went wrong!",
-                error: error
+                message: "Ocurrio un error"
             });
         }
     }).catch(error => {

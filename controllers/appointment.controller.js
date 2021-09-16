@@ -35,13 +35,13 @@ function createNewAppointments(req, res) {
 
 function getClasesByTrainnerID(req, res) {
     models.Appointment.findAll({where:{trainnerID:req.body.trainnerID}}).then(result => {
-        if(result.length != 0) {
+        if(result) {
             res.status(200).json({
                 data: result
             });
         } else {
             res.status(404).json({
-                message: "El entrenador no posee clases!"
+                message: "Ocurrio un error!"
             });
         }
     }).catch(error => {
@@ -54,13 +54,13 @@ function getClasesByTrainnerID(req, res) {
 
 function getAllClases(req, res) {
     models.Appointment.findAll().then(result => {
-        if(result.length != 0) {
+        if(result) {
             res.status(200).json({
                 data: result
             });
         } else {
             res.status(404).json({
-                message: "No hay clases!"
+                message: "Ocurrio un error!"
             });
         }
     }).catch(error => {
