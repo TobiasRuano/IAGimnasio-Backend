@@ -31,7 +31,7 @@ function createSubscription(req, res) {
                     data: result2
                 });
             }).catch(error => {
-                res.status(500).json({
+                res.status(501).json({
                     message: "Ocurrio un error al crear el abono!",
                     error: error
                 });
