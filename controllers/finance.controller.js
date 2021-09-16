@@ -15,7 +15,7 @@ function getCurrentDate() {
 function createSubscription(req, res) {
     models.Subscription.findOne({where:{length:req.body.length}}).then(result => {
         if(result) {
-            res.status(500).json({
+            res.status(401).json({
                 message: "Ya existe un abono con la duracion deseada."
             });
         } else {
@@ -77,7 +77,7 @@ function setSubscription(req, res) {
                             
                             models.UserSubscription.create(newUserSubscription).then(result => {
                                 res.status(201).json({
-                                    message: "Abono creado correctamente!",
+                                    message: "Usuario subscripto correctamente!",
                                     data: result
                                 });
                             }).catch(error => {
