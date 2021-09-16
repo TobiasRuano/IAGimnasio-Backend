@@ -5,11 +5,13 @@ const financeRoute = require('./routes/finance.route');
 const appointmentRoute = require('./routes/appointment.route');
 
 const app = express();
+const cors = require('cors');
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({
     extended: false
 }));
+app.use(cors());
 
 app.get('/', (req, res) => {
     res.send('Gimnasio!')
