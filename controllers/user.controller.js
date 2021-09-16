@@ -85,6 +85,72 @@ function saveNewUser(model, user, res, mes) {
     });
 }
 
+function deleteUser(req, res) {
+    models.User.destroy({where: {id: req.body.id}}).then(result => {
+        if(result == true) {
+            res.status(200).json({
+                message: "Usuario eliminado correctamente!"
+            });
+        } else {
+            res.status(404).json({
+                message: "No existe el usuario deseado"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
+function deleteEmployee(req, res) {
+    models.Appointment.findOne({where: {trainnerID: req.body.id}}).then(result1 => {
+        if(result1){
+            models.Appointment.destroy({where: {trainnerID: req.body.id}}).then(result => {
+                if(result == true) {
+                    removeEmployee(req.body.id, res);
+                } else {
+                    res.status(400).json({
+                        message: "No se pudo eliminar el empleado, ya que no se pudo eliminar las clases que posee."
+                    });
+                }
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Something went wrong!",
+                    error: error
+                });
+            });
+        } else {
+            removeEmployee(req.body.id, res);
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
+function removeEmployee(id, res){
+    models.Employee.destroy({where: {id: id}}).then(result => {
+        if(result == true) {
+            res.status(200).json({
+                message: "Empleado eliminado correctamente!"
+            });
+        } else {
+            res.status(404).json({
+                message: "No existe el empleado deseado"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
 function login(req, res){
     models.User.findOne({where:{mail: req.body.mail}}).then(user => {
         if(user === null){
@@ -126,9 +192,8 @@ function getUserData(req, res) {
                 data: user
             });
         } else {
-            res.status(500).json({
-                message: "Something went wrong!",
-                error: error
+            res.status(404).json({
+                message: "No existe el usuario!"
             });
         }
     }).catch(error => {
@@ -266,6 +331,8 @@ function getEmployees(req, res) {
 
 module.exports = {
     createUser: createUser,
+    deleteUser: deleteUser,
+    deleteEmployee: deleteEmployee,
     login: login,
     getUserData: getUserData,
     getAllUsers: getAllUsers,

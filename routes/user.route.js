@@ -5,6 +5,8 @@ const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 router.post('/sign-up', userController.createUser);
+router.delete('/', userController.deleteUser);
+router.delete('/employee', userController.deleteEmployee);
 router.get('/', userController.getUserData);
 router.get('/get-users', userController.getAllUsers);
 router.post('/login', userController.login);
