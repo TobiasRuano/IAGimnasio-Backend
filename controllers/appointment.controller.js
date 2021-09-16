@@ -1,4 +1,7 @@
 const models = require('../models');
+const sequelize = require('../models/index.js');
+const fs = require('fs');
+var path = require('path');
 
 function createNewAppointments(req, res) {
     models.Appointment.findOne({where:{name:req.body.nombre}}).then(result => {
@@ -53,16 +56,12 @@ function getClasesByTrainnerID(req, res) {
 }
 
 function getAllClases(req, res) {
-    models.Appointment.findAll().then(result => {
-        if(result) {
-            res.status(200).json({
-                data: result
-            });
-        } else {
-            res.status(404).json({
-                message: "Ocurrio un error!"
-            });
-        }
+    var sqlPath = path.join(__dirname, '..', 'queries', 'getAllAppointments.query.sql');
+    var sqlString = fs.readFileSync(sqlPath, 'utf8');
+    sequelize.sequelize.query(sqlString).then(([result, metadata]) =>{
+        res.status(200).json({
+            data: result
+        });
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
