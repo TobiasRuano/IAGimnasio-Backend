@@ -12,10 +12,10 @@
     "operatorsAliases": 0
   },
   "test": {
-    "username": "iaadministrador",
-    "password": "8090fe68",
-    "database": "iagimnasio",
-    "host": "db4free.net",
+    "username": "TzRPRnYo5K",
+    "password": "Pe7nAVVC6k",
+    "database": "TzRPRnYo5K",
+    "host": "remotemysql.com",
     "dialect": "mysql",
     "dialectOptions": {
       "multipleStatements": true
@@ -24,10 +24,10 @@
     "operatorsAliases": 0
   },
   "production": {
-    "username": "TzRPRnYo5K",
-    "password": "Pe7nAVVC6k",
-    "database": "TzRPRnYo5K",
-    "host": "remotemysql.com",
+    "username": "iaadministrador",
+    "password": "8090fe68",
+    "database": "iagimnasio",
+    "host": "db4free.net",
     "dialect": "mysql",
     "dialectOptions": {
       "multipleStatements": true
