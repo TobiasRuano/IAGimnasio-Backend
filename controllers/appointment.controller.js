@@ -36,6 +36,25 @@ function createNewAppointments(req, res) {
     });
 }
 
+function deleteAppointment(req, res) {
+    models.Appointment.destroy({where: {id: req.body.id}}).then(result => {
+        if(result == true) {
+            res.status(200).json({
+                message: "Clase eliminada correctamente."
+            });
+        } else {
+            res.status(404).json({
+                message: "No existe la clase a eliminar."
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
 function getClasesByTrainnerID(req, res) {
     models.Appointment.findAll({where:{trainnerID:req.body.trainnerID}}).then(result => {
         if(result) {
@@ -103,6 +122,7 @@ function setAppointment(req, res) {
 
 module.exports = {
     createNewAppointments: createNewAppointments,
+    deleteAppointment: deleteAppointment,
     getClasesByTrainnerID: getClasesByTrainnerID,
     setAppointment: setAppointment,
     getAllClases: getAllClases
