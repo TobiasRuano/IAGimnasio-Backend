@@ -19,6 +19,7 @@ function createSubscription(req, res) {
                 message: "Ya existe un abono con la duracion deseada."
             });
         } else {
+            console.log(req.body);
             const abono = {
                 type: req.body.type,
                 length: parseInt(req.body.length),
