@@ -46,6 +46,25 @@ function createSubscription(req, res) {
     });
 }
 
+function deleteSubscriptions(req, res) {
+    models.Subscription.destroy({where: {id: req.body.id}}).then(result => {
+        if(result == 0) {
+            res.status(200).json({
+                message: "Abono eliminado correctamente!"
+            });
+        } else {
+            res.status(404).json({
+                message: "No existe el abono deseado"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
 function setSubscription(req, res) {
     models.User.findOne({where:{dni:req.body.dni}}).then(user => {
         if(user) {
@@ -247,6 +266,7 @@ function getSubscriptions(req, res) {
 
 module.exports = {
     createSubscription: createSubscription,
+    deleteSubscriptions: deleteSubscriptions,
     setSubscription: setSubscription,
     calculatePayroll: calculatePayroll,
     getSubscriptions: getSubscriptions,
