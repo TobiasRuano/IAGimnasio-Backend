@@ -113,6 +113,27 @@ function setSubscription(req, res) {
     });
 }
 
+function getUserSubscription(req, res) {
+    var sqlPath = path.join(__dirname, '..', 'queries', 'getUserActiveSubscription.query.sql');
+    var sqlString = fs.readFileSync(sqlPath, 'utf8');
+    sequelize.sequelize.query(sqlString, {replacements: {id: req.body.userID, today: getCurrentDate()}}).then(([userSubscription, metadata]) =>{
+        if(userSubscription.length != 0) {
+            res.status(500).json({
+                data: userSubscription
+            });
+        } else {
+            res.status(500).json({
+                message: "No posee una subscripcion activa"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error al intentar obtener el usuario!",
+            error: error
+        });
+    });
+}
+
 async function paySubscription(metodo, res) {
     if(metodo.tipo == 0) {
         // efectivo
@@ -227,5 +248,6 @@ module.exports = {
     createSubscription: createSubscription,
     setSubscription: setSubscription,
     calculatePayroll: calculatePayroll,
-    getSubscriptions: getSubscriptions
+    getSubscriptions: getSubscriptions,
+    getUserSubscription: getUserSubscription
 } 

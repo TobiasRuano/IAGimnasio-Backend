@@ -8,5 +8,6 @@ router.post('/pay-salary', financeController.calculatePayroll);
 router.post('/new-subscription', financeController.createSubscription);
 router.post('/set-subscription', financeController.setSubscription);
 router.get('/get-subscriptions', financeController.getSubscriptions);
+router.get('/get-user-subscription', financeController.getUserSubscription);
 
 module.exports = router;
