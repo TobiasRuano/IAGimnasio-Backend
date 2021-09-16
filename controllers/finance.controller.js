@@ -118,11 +118,11 @@ function getUserSubscription(req, res) {
     var sqlString = fs.readFileSync(sqlPath, 'utf8');
     sequelize.sequelize.query(sqlString, {replacements: {id: req.body.userID, today: getCurrentDate()}}).then(([userSubscription, metadata]) =>{
         if(userSubscription.length != 0) {
-            res.status(500).json({
+            res.status(200).json({
                 data: userSubscription
             });
         } else {
-            res.status(500).json({
+            res.status(404).json({
                 message: "No posee una subscripcion activa"
             });
         }
