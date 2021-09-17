@@ -33,8 +33,6 @@ function createUser(req, res){
                     }
 
                     if(req.body.type == 0) {
-                        user.subscriptionID = null
-                        user.AppointmentID = null
                         user.healthDataID = null
                         user.type = 0
 

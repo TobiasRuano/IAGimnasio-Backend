@@ -14,11 +14,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   User.init({
-    subscriptionID: DataTypes.INTEGER,
-    AppointmentID: DataTypes.INTEGER,
     healthDataID: DataTypes.INTEGER,
     name: DataTypes.STRING,
-    Surname: DataTypes.STRING,
+    surname: DataTypes.STRING,
     dni: DataTypes.INTEGER,
     email: DataTypes.STRING,
     type: DataTypes.INTEGER,

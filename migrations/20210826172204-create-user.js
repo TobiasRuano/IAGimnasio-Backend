@@ -8,19 +8,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      subscriptionID: {
-        type: Sequelize.INTEGER
-      },
-      AppointmentID: {
-        type: Sequelize.INTEGER
-      },
       healthDataID: {
         type: Sequelize.INTEGER
       },
       name: {
         type: Sequelize.STRING
       },
-      Surname: {
+      surname: {
         type: Sequelize.STRING
       },
       dni: {
