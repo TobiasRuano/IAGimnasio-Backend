@@ -184,8 +184,11 @@ function login(req, res){
 
 // TODO: juntar con descripcion medica
 function getUserData(req, res) {
-    models.User.findOne({where:{dni:req.body.dni}}).then(user => {
-        if(user) {
+    var sqlPath = path.join(__dirname, '..', 'queries', 'getUser.query.sql');
+    var sqlString = fs.readFileSync(sqlPath, 'utf8');
+    sequelize.sequelize.query(sqlString, {replacements: {userDNI:req.body.dni, today: getCurrentDate()}}).then(([users, metadata]) =>{
+        if(users.length != 0) {
+            const user = users[0];
             res.status(200).json({
                 data: user
             });
@@ -196,8 +199,7 @@ function getUserData(req, res) {
         }
     }).catch(error => {
         res.status(500).json({
-            message: "Something went wrong!",
-            error: error
+            message: "Ocurrio un error!"
         });
     });
 }
@@ -206,7 +208,7 @@ function getAllUsers(req, res) {
     var sqlPath = path.join(__dirname, '..', 'queries', 'getAllUsers.query.sql');
     var sqlString = fs.readFileSync(sqlPath, 'utf8');
     sequelize.sequelize.query(sqlString, {replacements: {today: getCurrentDate()}}).then(([users, metadata]) =>{
-        if(users) {
+        if(users.length != 0) {
             res.status(200).json({
                 data: users
             });
