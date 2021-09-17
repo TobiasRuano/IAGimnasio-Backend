@@ -203,10 +203,12 @@ function getUserData(req, res) {
 }
 
 function getAllUsers(req, res) {
-    models.User.findAll().then(result => {
-        if(result) {
+    var sqlPath = path.join(__dirname, '..', 'queries', 'getAllUsers.query.sql');
+    var sqlString = fs.readFileSync(sqlPath, 'utf8');
+    sequelize.sequelize.query(sqlString, {replacements: {today: getCurrentDate()}}).then(([users, metadata]) =>{
+        if(users) {
             res.status(200).json({
-                data: result
+                data: users
             });
         } else {
             res.status(500).json({
@@ -215,8 +217,7 @@ function getAllUsers(req, res) {
         }
     }).catch(error => {
         res.status(500).json({
-            message: "Something went wrong!",
-            error: error
+            message: "Ocurrio un error!"
         });
     });
 }
