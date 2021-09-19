@@ -82,6 +82,38 @@ function saveNewUser(model, user, res, mes) {
     });
 }
 
+// actualizar usuario
+function updateUser(req, res) {
+    models.User.findOne({where:{id:req.body.id}}).then(result => {
+        if(result) {
+            const user = {
+                email: req.body.email != null ? req.body.email : result.email,
+                address: req.body.address != null ? req.body.address : result.address,
+                phone: req.body.phone != null ? req.body.phone : result.phone,
+            }
+            models.User.update(user, {where: {id: result.id}}).then(result => {
+                res.status(200).json({
+                    message: "Usuario actualizado correctamente!"
+                });
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Ocurrio un error!",
+                    error: error
+                });
+            });
+        } else {
+            res.status(404).json({
+                message: "No se encontro el usuario deseado"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error. Pusiste bien los datos en el body?",
+            error: error
+        });
+    });
+}
+
 function deleteUser(req, res) {
     models.User.destroy({where: {id: req.body.id}}).then(result => {
         if(result == true) {
@@ -96,6 +128,41 @@ function deleteUser(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
+            error: error
+        });
+    });
+}
+
+// actualizar empleado
+function updateEmployee(req, res) {
+    models.Employee.findOne({where:{id:req.body.id}}).then(result => {
+        if(result) {
+            const employee = {
+                email: req.body.email != null ? req.body.email : result.email,
+                address: req.body.address != null ? req.body.address : result.address,
+                phone: req.body.phone != null ? req.body.phone : result.phone,
+                salaryPerHour: req.body.salaryPerHour != null ? req.body.salaryPerHour : result.salaryPerHour,
+                type: req.body.type != null ? req.body.type : result.type,
+                hoursWorked: req.body.hoursWorked != null ? req.body.hoursWorked : result.hoursWorked,
+            }
+            models.Employee.update(employee, {where: {id: result.id}}).then(result => {
+                res.status(200).json({
+                    message: "Empleado actualizado correctamente!"
+                });
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Ocurrio un error!",
+                    error: error
+                });
+            });
+        } else {
+            res.status(404).json({
+                message: "No se encontro el empleado deseado!"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error. Pusiste bien los datos en el body?",
             error: error
         });
     });
@@ -181,7 +248,6 @@ function login(req, res){
     });
 }
 
-// TODO: juntar con descripcion medica
 function getUserData(req, res) {
     var sqlPath = path.join(__dirname, '..', 'queries', 'getUser.query.sql');
     var sqlString = fs.readFileSync(sqlPath, 'utf8');
@@ -324,6 +390,8 @@ function getEmployees(req, res) {
 module.exports = {
     createUser: createUser,
     deleteUser: deleteUser,
+    updateUser: updateUser,
+    updateEmployee: updateEmployee,
     deleteEmployee: deleteEmployee,
     login: login,
     getUserData: getUserData,

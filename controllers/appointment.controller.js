@@ -31,7 +31,40 @@ function createNewAppointments(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
-            error
+            error: error
+        });
+    });
+}
+
+// actualizar clase
+function updateAppointment(req, res) {
+    models.Appointment.findOne({where:{id:req.body.id}}).then(result => {
+        if(result) {
+            const newAppointment = {
+                name: req.body.name != null ? req.body.name : result.name,
+                trainnerID: req.body.trainnerID != null ? req.body.trainnerID : result.trainnerID,
+                description: req.body.description != null ? req.body.description : result.description,
+                schedule: req.body.schedule != null ? req.body.schedule : result.schedule
+            }
+            models.Appointment.update(newAppointment, {where: {id: result.id}}).then(result => {
+                res.status(200).json({
+                    message: "Clase actualizada correctamente!"
+                });
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Ocurrio un error!",
+                    error: error
+                });
+            });
+        } else {
+            res.status(404).json({
+                message: "No se encontro la clase solicitada"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error. Pusiste bien los datos en el body?",
+            error: error
         });
     });
 }
@@ -122,6 +155,7 @@ function setAppointment(req, res) {
 
 module.exports = {
     createNewAppointments: createNewAppointments,
+    updateAppointment: updateAppointment,
     deleteAppointment: deleteAppointment,
     getClasesByTrainnerID: getClasesByTrainnerID,
     setAppointment: setAppointment,
