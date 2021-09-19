@@ -4,4 +4,4 @@ select Users.id, Users.name, Users.surname, Users.dni, Users.email, Users.birthd
 	left join Subscriptions 
 		on Subscriptions.id = a.subscriptionID
     left join HealthRecords 
-		on HealthRecords.id = Users.healthDataID
+		on HealthRecords.userID = Users.id

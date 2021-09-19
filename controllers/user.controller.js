@@ -33,7 +33,6 @@ function createUser(req, res){
                     }
 
                     if(req.body.type == 0) {
-                        user.healthDataID = null
                         user.type = 0
 
                         saveNewUser(models.User, user, res, "Usuario creado exitosamente!");
@@ -241,7 +240,10 @@ function setHealthRecord(req, res) {
             models.HealthRecords.findOne({where:{userID:user.id}}).then(result => {
                 if(result) {
                     models.HealthRecords.update(record, {where:{id:result.id}}).then(result2 => {
-                        updateHealthRecordIDUserModel(result, user, res);
+                        res.status(200).json({
+                            message: "Informacion medica actualizada!",
+                            data: result2
+                        });
                     }).catch(error => {
                         res.status(500).json({
                             message: "Ocurrio un error!",
@@ -250,7 +252,10 @@ function setHealthRecord(req, res) {
                     });
                 } else {
                     models.HealthRecords.create(record).then(result3 => {
-                        updateHealthRecordIDUserModel(result3, user, res);
+                        res.status(200).json({
+                            message: "Informacion medica actualizada!",
+                            data: result3
+                        });
                     }).catch(error => {
                         res.status(500).json({
                             message: "Ocurrio un error!",
@@ -272,20 +277,6 @@ function setHealthRecord(req, res) {
     }).catch(error =>{
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
-        });
-    });
-}
-
-function updateHealthRecordIDUserModel(result, user, res) {
-    models.User.update({healthDataID:result.id}, {where:{id:user.id}}).then(result4 => {
-        res.status(200).json({
-            message: "Informacion medica actualizada!",
-            data: result4
-        });
-    }).catch(error => {
-        res.status(200).json({
-            message: "Hubo un error al actualizar la informacion!",
             error: error
         });
     });

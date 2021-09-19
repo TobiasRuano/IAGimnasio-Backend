@@ -6,5 +6,5 @@ select b.id, b.name, b.surname, b.dni, b.email, b.birthday, b.address, b.phone, 
 	left join Subscriptions 
 		on Subscriptions.id = a.subscriptionID
     left join HealthRecords 
-		on HealthRecords.id = b.healthDataID
+		on HealthRecords.userId = b.id
     LIMIT 1
