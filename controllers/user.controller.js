@@ -373,7 +373,6 @@ module.exports = {
     updateEmployee: updateEmployee,
     deleteEmployee: deleteEmployee,
     login: login,
-    getUserData: getUserData,
     getAllUsers: getAllUsers,
     getTrainners: getTrainners,
     getEmployees: getEmployees,
