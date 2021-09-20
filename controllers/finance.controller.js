@@ -46,6 +46,35 @@ function createSubscription(req, res) {
     });
 }
 
+function updateSubscription(req, res) {
+    models.Subscription.findOne({where:{id:req.body.id}}).then(result => {
+        if(result) {
+            const newSubscription = {
+                price: req.body.price != null ? req.body.price : result.price
+            }
+            models.Subscription.update(newSubscription, {where: {id: result.id}}).then(result => {
+                res.status(200).json({
+                    message: "Abono actualizado correctamente!"
+                });
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Ocurrio un error!",
+                    error: error
+                });
+            });
+        } else {
+            res.status(404).json({
+                message: "No se encontro el abono solicitado"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error. Pusiste bien los datos en el body?",
+            error: error
+        });
+    });
+}
+
 function deleteSubscriptions(req, res) {
     models.Subscription.destroy({where: {id: req.body.id}}).then(result => {
         if(result == true) {
@@ -266,6 +295,7 @@ function getSubscriptions(req, res) {
 
 module.exports = {
     createSubscription: createSubscription,
+    updateSubscription: updateSubscription,
     deleteSubscriptions: deleteSubscriptions,
     setSubscription: setSubscription,
     calculatePayroll: calculatePayroll,
