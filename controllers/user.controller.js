@@ -248,27 +248,6 @@ function login(req, res){
     });
 }
 
-function getUserData(req, res) {
-    var sqlPath = path.join(__dirname, '..', 'queries', 'getUser.query.sql');
-    var sqlString = fs.readFileSync(sqlPath, 'utf8');
-    sequelize.sequelize.query(sqlString, {replacements: {userDNI:req.body.dni, today: getCurrentDate()}}).then(([users, metadata]) =>{
-        if(users.length != 0) {
-            const user = users[0];
-            res.status(200).json({
-                data: user
-            });
-        } else {
-            res.status(404).json({
-                message: "No existe el usuario!"
-            });
-        }
-    }).catch(error => {
-        res.status(500).json({
-            message: "Ocurrio un error!"
-        });
-    });
-}
-
 function getAllUsers(req, res) {
     var sqlPath = path.join(__dirname, '..', 'queries', 'getAllUsers.query.sql');
     var sqlString = fs.readFileSync(sqlPath, 'utf8');
