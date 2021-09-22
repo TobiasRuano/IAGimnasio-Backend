@@ -77,21 +77,8 @@ function updateSubscription(req, res) {
 function deleteSubscriptions(req, res) {
     models.Subscription.destroy({where: {id: req.body.id}}).then(result => {
         if(result == true) {
-            models.UserSubscription.destroy({where: {subscriptionID: req.body.id}}).then(result => {
-                if(result == true) {
-                    res.status(200).json({
-                        message: "Abono eliminado correctamente!"
-                    });
-                } else {
-                    res.status(500).json({
-                        message: "Hubo un error al intentar eliminar las subscripciones de los socios. Seria mejor usar una transaccion."
-                    });
-                }
-            }).catch(error => {
-                res.status(500).json({
-                    message: "Something went wrong!",
-                    error: error
-                });
+            res.status(200).json({
+                message: "Abono eliminado correctamente!"
             });
         } else {
             res.status(404).json({
