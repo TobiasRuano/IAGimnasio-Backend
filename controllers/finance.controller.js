@@ -115,10 +115,11 @@ function setSubscription(req, res) {
                                 comprobante = req.body.metodoPago.comprobante;
                             }
                             const newUserSubscription = {
-                                subscriptionID: subscriptionInfo.id,
+                                subscriptionType: subscriptionInfo.type,
                                 userID: user.id,
                                 receiptNumber: comprobante,
                                 paymentMethod: tipo,
+                                price: subscriptionInfo.price,
                                 startDate: start,
                                 endDate: end
                             }

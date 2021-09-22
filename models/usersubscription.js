@@ -14,12 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   UserSubscription.init({
-    subscriptionID: DataTypes.INTEGER,
+    subscriptionType: DataTypes.STRING,
     userID: DataTypes.INTEGER,
     startDate: DataTypes.DATEONLY,
     endDate: DataTypes.DATEONLY,
     paymentMethod: DataTypes.STRING,
-    receiptNumber: DataTypes.STRING
+    receiptNumber: DataTypes.STRING,
+    price: DataTypes.DOUBLE
   }, {
     sequelize,
     modelName: 'UserSubscription',

@@ -8,8 +8,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      subscriptionID: {
-        type: Sequelize.INTEGER
+      subscriptionType: {
+        type: Sequelize.STRING
       },
       userID: {
         type: Sequelize.INTEGER
@@ -25,6 +25,9 @@ module.exports = {
       },
       receiptNumber: {
         type: Sequelize.STRING
+      },
+      price: {
+        type: Sequelize.DOUBLE
       },
       createdAt: {
         allowNull: false,
