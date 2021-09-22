@@ -72,7 +72,7 @@ function saveNewUser(model, user, res, mes) {
     model.create(user).then(result => {
         res.status(201).json({
             message: mes,
-            data: user
+            data: result
         });
     }).catch(error => {
         res.status(500).json({
