@@ -87,6 +87,8 @@ function updateUser(req, res) {
     models.User.findOne({where:{id:req.body.id}}).then(result => {
         if(result) {
             const user = {
+                name: req.body.name != null ? req.body.name : result.name,
+                surname: req.body.surname != null ? req.body.surname : result.surname,
                 email: req.body.email != null ? req.body.email : result.email,
                 address: req.body.address != null ? req.body.address : result.address,
                 phone: req.body.phone != null ? req.body.phone : result.phone,
@@ -138,13 +140,12 @@ function updateEmployee(req, res) {
     models.Employee.findOne({where:{id:req.body.id}}).then(result => {
         if(result) {
             const employee = {
+                name: req.body.name != null ? req.body.name : result.name,
+                surname: req.body.surname != null ? req.body.surname : result.surname,
                 email: req.body.email != null ? req.body.email : result.email,
                 address: req.body.address != null ? req.body.address : result.address,
                 phone: req.body.phone != null ? req.body.phone : result.phone,
-                salaryPerHour: req.body.salaryPerHour != null ? req.body.salaryPerHour : result.salaryPerHour,
-                type: req.body.type != null ? req.body.type : result.type,
-                hoursWorked: req.body.hoursWorked != null ? req.body.hoursWorked : result.hoursWorked,
-            }
+                }
             models.Employee.update(employee, {where: {id: result.id}}).then(result => {
                 res.status(200).json({
                     message: "Empleado actualizado correctamente!"
