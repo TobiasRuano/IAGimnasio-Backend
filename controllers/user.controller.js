@@ -135,6 +135,72 @@ function update(model, req , res) {
     });
 }
 
+function updateUser(req, res) {
+    models.User.findOne({where:{id:req.body.id}}).then(result => {
+        if(result) {
+            const user = {
+                name: req.body.name != null ? req.body.name : result.name,
+                surname: req.body.surname != null ? req.body.surname : result.surname,
+                email: req.body.email != null ? req.body.email : result.email,
+                address: req.body.address != null ? req.body.address : result.address,
+                phone: req.body.phone != null ? req.body.phone : result.phone,
+            }
+            models.User.update(user, {where: {id: result.id}}).then(result => {
+                res.status(200).json({
+                    message: "Usuario actualizado correctamente!"
+                });
+            }).catch(error => {
+                res.status(500).json({
+                   message: "Ocurrio un error!",
+                   error: error
+               });
+            });
+        } else {
+            res.status(404).json({
+                message: "No se encontro el usuario deseado"
+            });
+        }
+    }).catch(error => {
+       res.status(500).json({
+           message: "Ocurrio un error. Pusiste bien los datos en el body?",
+           error: error
+       });
+   });
+}
+
+function updateEmployee(req, res) {
+    models.Employee.findOne({where:{id:req.body.id}}).then(result => {
+        if(result) {
+            const employee = {
+                name: req.body.name != null ? req.body.name : result.name,
+                surname: req.body.surname != null ? req.body.surname : result.surname,
+                email: req.body.email != null ? req.body.email : result.email,
+                address: req.body.address != null ? req.body.address : result.address,
+                phone: req.body.phone != null ? req.body.phone : result.phone,
+                }
+            models.Employee.update(employee, {where: {id: result.id}}).then(result => {
+                res.status(200).json({
+                    message: "Empleado actualizado correctamente!"
+                });
+            }).catch(error => {
+                res.status(500).json({
+                    message: "Ocurrio un error!",
+                    error: error
+                });
+            });
+        } else {
+            res.status(404).json({
+                message: "No se encontro el empleado deseado!"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error. Pusiste bien los datos en el body?",
+            error: error
+        });
+    });
+}
+
 function deleteUser(req, res) {
     models.User.destroy({where: {id: req.body.id}}).then(result => {
         if(result == true) {
@@ -356,6 +422,8 @@ module.exports = {
     createUser: createUser,
     deleteUser: deleteUser,
     updateAccount: updateAccount,
+    updateUser: updateUser,
+    updateEmployee: updateEmployee,
     deleteEmployee: deleteEmployee,
     login: login,
     getAllUsers: getAllUsers,
