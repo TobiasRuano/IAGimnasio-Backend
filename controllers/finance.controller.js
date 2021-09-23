@@ -110,9 +110,9 @@ function setSubscription(req, res) {
                             var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');
                             var tipo = "Efectivo";
                             var comprobante = "";
-                            if(req.body.metodoPago.tipo == 1) {
+                            if(req.body.tipo == 1) {
                                 tipo = "Tarjeta credito / debito";
-                                comprobante = req.body.metodoPago.comprobante;
+                                comprobante = req.body.comprobante;
                             }
                             const newUserSubscription = {
                                 subscriptionType: subscriptionInfo.type,
