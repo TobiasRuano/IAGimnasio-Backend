@@ -83,19 +83,38 @@ function saveNewUser(model, user, res, mes) {
 }
 
 // actualizar usuario
-function updateUser(req, res) {
-    models.User.findOne({where:{id:req.body.id}}).then(result => {
+function updateAccount(req, res) {
+    const value = parseInt(req.body.type);
+    switch (value) {
+        case 0:
+            update(models.User, req, res);
+            break;
+        case 1:
+            update(models.Employee, req, res);
+            break;
+        case 2:
+            update(models.Employee, req, res);
+            break;
+        default:
+            res.status(500).json({
+                message: "Chequea que el type de la cuenta sea correcto"
+            });
+    }
+}
+
+function update(model, req , res) {
+    model.findOne({where:{id:req.body.id}}).then(result => {
         if(result) {
-            const user = {
+            const account = {
                 name: req.body.name != null ? req.body.name : result.name,
                 surname: req.body.surname != null ? req.body.surname : result.surname,
                 email: req.body.email != null ? req.body.email : result.email,
                 address: req.body.address != null ? req.body.address : result.address,
                 phone: req.body.phone != null ? req.body.phone : result.phone,
             }
-            models.User.update(user, {where: {id: result.id}}).then(result => {
+            model.update(account, {where: {id: result.id}}).then(result2 => {
                 res.status(200).json({
-                    message: "Usuario actualizado correctamente!"
+                    message: "Cuenta actualizado correctamente!"
                 });
             }).catch(error => {
                 res.status(500).json({
@@ -105,7 +124,7 @@ function updateUser(req, res) {
             });
         } else {
             res.status(404).json({
-                message: "No se encontro el usuario deseado"
+                message: "No se encontro la cuenta deseada"
             });
         }
     }).catch(error => {
@@ -130,40 +149,6 @@ function deleteUser(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
-        });
-    });
-}
-
-// actualizar empleado
-function updateEmployee(req, res) {
-    models.Employee.findOne({where:{id:req.body.id}}).then(result => {
-        if(result) {
-            const employee = {
-                name: req.body.name != null ? req.body.name : result.name,
-                surname: req.body.surname != null ? req.body.surname : result.surname,
-                email: req.body.email != null ? req.body.email : result.email,
-                address: req.body.address != null ? req.body.address : result.address,
-                phone: req.body.phone != null ? req.body.phone : result.phone,
-                }
-            models.Employee.update(employee, {where: {id: result.id}}).then(result => {
-                res.status(200).json({
-                    message: "Empleado actualizado correctamente!"
-                });
-            }).catch(error => {
-                res.status(500).json({
-                    message: "Ocurrio un error!",
-                    error: error
-                });
-            });
-        } else {
-            res.status(404).json({
-                message: "No se encontro el empleado deseado!"
-            });
-        }
-    }).catch(error => {
-        res.status(500).json({
-            message: "Ocurrio un error. Pusiste bien los datos en el body?",
             error: error
         });
     });
@@ -370,8 +355,7 @@ function getEmployees(req, res) {
 module.exports = {
     createUser: createUser,
     deleteUser: deleteUser,
-    updateUser: updateUser,
-    updateEmployee: updateEmployee,
+    updateAccount: updateAccount,
     deleteEmployee: deleteEmployee,
     login: login,
     getAllUsers: getAllUsers,
