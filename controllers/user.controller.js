@@ -305,8 +305,23 @@ function getAllUsers(req, res) {
     var sqlString = fs.readFileSync(sqlPath, 'utf8');
     sequelize.sequelize.query(sqlString, {replacements: {today: getCurrentDate()}}).then(([users, metadata]) =>{
         if(users.length != 0) {
-            res.status(200).json({
-                data: users
+            var sqlPath = path.join(__dirname, '..', 'queries', 'getClases.query.sql');
+            var sqlString = fs.readFileSync(sqlPath, 'utf8');
+            sequelize.sequelize.query(sqlString, {}).then(([clases, metadata]) =>{
+                if(clases) {
+                    for(let i=0; i<users.length; i++) {
+                        users[i].clases = [];
+                        for(let j=0; j<clases.length; j++) {
+                            if(users[i].id == clases[j].userID) {
+                                users[i].clases.push(clases[j].name);
+                            }
+                        }
+                    }
+                    console.log(users);
+                    res.status(200).json({
+                        data: users
+                    });
+                }
             });
         } else {
             res.status(500).json({
