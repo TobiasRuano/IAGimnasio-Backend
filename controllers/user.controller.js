@@ -317,9 +317,12 @@ function getAllUsers(req, res) {
                             }
                         }
                     }
-                    console.log(users);
                     res.status(200).json({
                         data: users
+                    });
+                } else {
+                    res.status(404).json({
+                        message: "Hubo un error al consultar la base de datos. Fallo la obtencion de clases."
                     });
                 }
             });
