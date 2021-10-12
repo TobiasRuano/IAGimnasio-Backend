@@ -3,6 +3,7 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const sequelize = require('../models/index.js');
+const financeController = require('../controllers/finance.controller.js');
 const fs = require('fs');
 var path = require('path');
 
@@ -35,21 +36,21 @@ function createUser(req, res){
                     if(req.body.type == 0) {
                         user.type = 0
 
-                        saveNewUser(models.User, user, res, "Usuario creado exitosamente!");
+                        saveNewUser(models.User, user, res, "Usuario creado exitosamente!", req);
 
                     } else if (req.body.type == 1) {
                         user.salaryPerHour = 100
                         user.hoursWorked = 0
                         user.type = 1
 
-                        saveNewUser(models.Employee, user, res, "Entrenador creado exitosamente!");
+                        saveNewEmployee(models.Employee, user, res, "Entrenador creado exitosamente!");
 
                     } else if (req.body.type == 2){
                         user.salaryPerHour = 120
                         user.type = 2
                         user.hoursWorked = 160
 
-                        saveNewUser(models.Employee, user, res, "Administrador creado exitosamente!");
+                        saveNewEmployee(models.Employee, user, res, "Administrador creado exitosamente!");
 
                     } else {
                         res.status(500).json({
@@ -68,7 +69,26 @@ function createUser(req, res){
     });
 }
 
-function saveNewUser(model, user, res, mes) {
+function saveNewUser(model, user, res, mes, data) {
+    model.create(user).then(result => {
+        const req = {
+            body: {
+                dni: user.dni,
+                subscriptionID: data.body.subscriptionID,
+                comprobante: data.body.comprobante,
+                tipo: data.body.tipoMetodoPago
+            }
+        }
+        financeController.setSubscription(req, res);
+    }).catch(error => {
+        res.status(500).json({
+            message: "Ocurrio un error!",
+            error: error
+        });
+    });
+}
+
+function saveNewEmployee(model, user, res, mes) {
     model.create(user).then(result => {
         res.status(201).json({
             message: mes,
@@ -82,7 +102,6 @@ function saveNewUser(model, user, res, mes) {
     });
 }
 
-// actualizar usuario
 function updateAccount(req, res) {
     const value = parseInt(req.body.type);
     switch (value) {
