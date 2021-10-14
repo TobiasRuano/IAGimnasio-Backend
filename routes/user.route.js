@@ -10,7 +10,6 @@ router.patch('/', userController.updateUser);
 router.patch('/employee', userController.updateEmployee);
 router.delete('/employee', userController.deleteEmployee);
 router.get('/get-users', userController.getAllUsers);
-router.post('/login', userController.login);
 router.get('/trainners', userController.getTrainners);
 router.get('/employees', userController.getEmployees);
 router.post('/set-health-record', userController.setHealthRecord);
