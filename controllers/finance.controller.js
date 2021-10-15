@@ -204,6 +204,7 @@ async function calculatePayroll(req, res) {
         for(let i = 0; i < employees.length; i++) {
             const employee = employees[i];
             await models.Employee.findOne({where:{id:employee.id}}, { transaction: t }).then(async emp => {
+                var error1;
                 try {
                     if(emp) {
                         await models.Wages.findOne({where:{employeeID:emp.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}, { transaction: t }).then( async result => {
@@ -220,29 +221,30 @@ async function calculatePayroll(req, res) {
                                 return a
                             } else {
                                 const m = "El empleado: " + emp.id + " ya tenia un sueldo liquidado.";
-                                console.log(m);
-                                throw new Error();
+                                throw new Error(m);
                             }
                         }).catch( error => {
-                            throw new Error();
+                            error1 = error;
+                            throw error;
                         });
                     } else {
-                        throw new Error();
+                        if(error1) {
+                            throw new Error(error1);
+                        } else {
+                            error1 = "No existe el empleado: " + employee.id;
+                            throw new Error(error1);
+                        }
                     }
                 } catch {
-                    throw new Error();
+                    throw new Error(error1);
                 }
             });
-            console.log("Empleado: " + employee.id);
         }
     }).then(result => {
-        console.log("Casi");
         res.status(200).json({
             message: "Todos los sueldos fueron liquidados!"
         });
-        console.log("Listo");
     }).catch(error => {
-        console.log("ACAAAAAAAA");
         res.status(500).json({
             message: "Error al intentar liquidar los sueldos.",
             more: "Posiblemente esten mal los ID's de los empleados, o algun empleado ya tuvo su sueldo liquidado."
