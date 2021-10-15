@@ -194,47 +194,65 @@ async function paySubscription(metodo, res) {
 }
 
 // periodo fecha de inicio y fecha de fin id
-function calculatePayroll(req, res) {
-    models.Employee.findOne({where:{id:req.body.id}}).then(employee => {
-        if(employee) {
+async function calculatePayroll(req, res) {
+    const employees = req.body.employees;
+    
+    const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
+    var end = moment(start, "YYYY-MM-DD").add(30, 'days');
 
-            const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
-            var end = moment(start, "YYYY-MM-DD").add(30, 'days');
-
-            models.Wages.findOne({where:{employeeID:employee.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}).then( result => {
-                if(!result) {
-                    if(employee.type == 1) {
-                        getHoursWorked(employee.id, start, end).then(async hoursWorked => {
-                            paySalary(req, hoursWorked * employee.salaryPerHour, employee, start, end, res);
+    return sequelize.sequelize.transaction(async (t) => {
+        for(let i = 0; i < employees.length; i++) {
+            const employee = employees[i];
+            await models.Employee.findOne({where:{id:employee.id}}, { transaction: t }).then(async emp => {
+                var error1;
+                try {
+                    if(emp) {
+                        await models.Wages.findOne({where:{employeeID:emp.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}, { transaction: t }).then( async result => {
+                            if(!result) {
+                                var total = 0;
+                                var a;
+                                if(emp.type == 1) {
+                                    total = 160 * emp.salaryPerHour;
+                                    a = await paySalary(total, emp, start, end, { transaction: t });
+                                } else {
+                                    total = emp.hoursWorked * emp.salaryPerHour;
+                                    a = await paySalary(total, emp, start, end, { transaction: t });
+                                }
+                                return a
+                            } else {
+                                const m = "El empleado: " + emp.id + " ya tenia un sueldo liquidado.";
+                                throw new Error(m);
+                            }
+                        }).catch( error => {
+                            error1 = error;
+                            throw error;
                         });
                     } else {
-                        paySalary(req, employee.hoursWorked * employee.salaryPerHour, employee, start, end, res);
+                        if(error1) {
+                            throw new Error(error1);
+                        } else {
+                            error1 = "No existe el empleado: " + employee.id;
+                            throw new Error(error1);
+                        }
                     }
-                } else {
-                    res.status(500).json({
-                        message: "Ya se liquido el sueldo para el trabajador en el periodo deseado."
-                    });
+                } catch {
+                    throw new Error(error1);
                 }
-            }).catch(error => {
-                res.status(500).json({
-                    message: "Something went wrong!",
-                    error: error
-                });
-            });
-        } else {
-            res.status(404).json({
-                message: "No existe un empleado para ese ID."
             });
         }
+    }).then(result => {
+        res.status(200).json({
+            message: "Todos los sueldos fueron liquidados!"
+        });
     }).catch(error => {
         res.status(500).json({
-            message: "Something went wrong!",
-            error: error
+            message: "Error al intentar liquidar los sueldos.",
+            more: "Posiblemente esten mal los ID's de los empleados, o algun empleado ya tuvo su sueldo liquidado."
         });
     });
 }
 
-function paySalary(req, sueldoTotal, employee, start, end, res) {
+function paySalary(sueldoTotal, employee, start, end, transaction) {
     const jubilacion = sueldoTotal * 0.11;
     const obraSocial = sueldoTotal * 0.03;
     const pami = sueldoTotal * 0.03;
@@ -248,29 +266,12 @@ function paySalary(req, sueldoTotal, employee, start, end, res) {
         obraSocial: obraSocial,
         pami: pami,
         total: (sueldoTotal - jubilacion - obraSocial - pami)
-    }      
+    }
 
-    models.Wages.create(salario).then(result => {
-        res.status(200).json({
-            message: "Sueldo liquidado para el trabador!",
-            sueldo: result
-        });
-    }).catch(error => {
-        res.status(500).json({
-            message: "Hubo un error al liquidar el sueldo.",
-            error: error
-        });
+    return models.Wages.create(salario, transaction).catch(error => {
+        console.log("Error al intentar liquidar el sueldo del id: " + employee.id);
+        throw new Error();
     });
-}
-
-function getHoursWorked(trainnerID, start, end) {
-    return new Promise((resolve, reject) => {
-        models.Appointment.findAll({where:{trainnerID:trainnerID}}).then(result => {
-            resolve(result.length * 12); // promedio de 3 clases por semana * 4 semanas
-        }).catch(error => {
-            reject();
-        });
-    })
 }
 
 function getSubscriptions(req, res) {
