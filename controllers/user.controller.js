@@ -30,11 +30,13 @@ function createUser(req, res){
                 user.type = 0
                 saveNewUser(models.User, user, res, "Usuario creado exitosamente!");
             } else if (req.body.type == 1) {
+                user.cbu = req.body.cbu
                 user.salaryPerHour = 100
                 user.hoursWorked = 0
                 user.type = 1
                 saveNewUser(models.Employee, user, res, "Entrenador creado exitosamente!");
             } else if (req.body.type == 2){
+                user.cbu = req.body.cbu
                 user.salaryPerHour = 120
                 user.type = 2
                 user.hoursWorked = 160
@@ -96,7 +98,7 @@ function update(model, req , res) {
                 surname: req.body.surname != null ? req.body.surname : result.surname,
                 email: req.body.email != null ? req.body.email : result.email,
                 address: req.body.address != null ? req.body.address : result.address,
-                phone: req.body.phone != null ? req.body.phone : result.phone,
+                phone: req.body.phone != null ? req.body.phone : result.phone
             }
             model.update(account, {where: {id: result.id}}).then(result2 => {
                 res.status(200).json({
@@ -163,6 +165,7 @@ function updateEmployee(req, res) {
                 email: req.body.email != null ? req.body.email : result.email,
                 address: req.body.address != null ? req.body.address : result.address,
                 phone: req.body.phone != null ? req.body.phone : result.phone,
+                cbu: req.body.cbu != null ? req.body.cbu : result.cbu,
                 }
             models.Employee.update(employee, {where: {id: result.id}}).then(result => {
                 res.status(200).json({
