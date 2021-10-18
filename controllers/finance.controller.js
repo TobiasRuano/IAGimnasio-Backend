@@ -195,59 +195,65 @@ async function paySubscription(metodo, res) {
 
 // periodo fecha de inicio y fecha de fin id
 async function calculatePayroll(req, res) {
-    const employees = req.body.employees;
-    
     const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
     var end = moment(start, "YYYY-MM-DD").add(30, 'days');
 
-    return sequelize.sequelize.transaction(async (t) => {
-        for(let i = 0; i < employees.length; i++) {
-            const employee = employees[i];
-            await models.Employee.findOne({where:{id:employee.id}}, { transaction: t }).then(async emp => {
-                var error1;
-                try {
-                    if(emp) {
-                        await models.Wages.findOne({where:{employeeID:emp.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}, { transaction: t }).then( async result => {
-                            if(!result) {
-                                var total = 0;
-                                var a;
-                                if(emp.type == 1) {
-                                    total = 160 * emp.salaryPerHour;
-                                    a = await paySalary(total, emp, start, end, { transaction: t });
+    models.Employee.findAll().then( employees => {
+        return sequelize.sequelize.transaction(async (t) => {
+            for(let i = 0; i < employees.length; i++) {
+                const employee = employees[i];
+                await models.Employee.findOne({where:{id:employee.id}}, { transaction: t }).then(async emp => {
+                    var error1;
+                    try {
+                        if(emp) {
+                            await models.Wages.findOne({where:{employeeID:emp.id, dateStart: { [Op.gte]: start }, dateEnd: { [Op.lte]: end}}}, { transaction: t }).then( async result => {
+                                if(!result) {
+                                    var total = 0;
+                                    var a;
+                                    if(emp.type == 1) {
+                                        total = 160 * emp.salaryPerHour;
+                                        a = await paySalary(total, emp, start, end, { transaction: t });
+                                    } else {
+                                        total = emp.hoursWorked * emp.salaryPerHour;
+                                        a = await paySalary(total, emp, start, end, { transaction: t });
+                                    }
+                                    return a
                                 } else {
-                                    total = emp.hoursWorked * emp.salaryPerHour;
-                                    a = await paySalary(total, emp, start, end, { transaction: t });
+                                    const m = "El empleado: " + emp.id + " ya tenia un sueldo liquidado.";
+                                    throw new Error(m);
                                 }
-                                return a
-                            } else {
-                                const m = "El empleado: " + emp.id + " ya tenia un sueldo liquidado.";
-                                throw new Error(m);
-                            }
-                        }).catch( error => {
-                            error1 = error;
-                            throw error;
-                        });
-                    } else {
-                        if(error1) {
-                            throw new Error(error1);
+                            }).catch( error => {
+                                error1 = error;
+                                throw error;
+                            });
                         } else {
-                            error1 = "No existe el empleado: " + employee.id;
-                            throw new Error(error1);
+                            if(error1) {
+                                throw new Error(error1);
+                            } else {
+                                error1 = "No existe el empleado: " + employee.id;
+                                throw new Error(error1);
+                            }
                         }
+                    } catch {
+                        throw new Error(error1);
                     }
-                } catch {
-                    throw new Error(error1);
-                }
+                });
+            }
+        }).then(result => {
+            res.status(200).json({
+                message: "Todos los sueldos fueron liquidados!"
             });
-        }
-    }).then(result => {
-        res.status(200).json({
-            message: "Todos los sueldos fueron liquidados!"
+        }).catch(error => {
+            res.status(500).json({
+                message: "Error al intentar liquidar los sueldos.",
+                more: "Posiblemente esten mal los ID's de los empleados, o algun empleado ya tuvo su sueldo liquidado."
+            });
         });
     }).catch(error => {
         res.status(500).json({
             message: "Error al intentar liquidar los sueldos.",
-            more: "Posiblemente esten mal los ID's de los empleados, o algun empleado ya tuvo su sueldo liquidado."
+            more: "No se pudieron obtener los empleados.",
+            error: error
         });
     });
 }
