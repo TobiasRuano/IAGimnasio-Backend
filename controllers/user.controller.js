@@ -24,8 +24,7 @@ function createUser(req, res){
                 email: req.body.email,
                 birthday: date,
                 address: req.body.address,
-                phone: req.body.phone,
-                password: hash
+                phone: req.body.phone
             }
             if(req.body.type == 0) {
                 user.type = 0
