@@ -38,6 +38,9 @@ module.exports = {
       hoursWorked: {
         type: Sequelize.INTEGER
       },
+      cbu: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
