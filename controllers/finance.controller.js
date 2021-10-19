@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const fs = require('fs');
 var path = require('path');
 const { start } = require('repl');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 function getCurrentDate() {
     var date = moment().tz("America/Buenos_Aires").format('YYYY-MM-DD');;
@@ -222,6 +223,8 @@ async function calculatePayroll(req, res) {
                                 const nuevoSueldo = {
                                     cbu: emp.cbu,
                                     importe: a.total,
+                                    fechaPago: getCurrentDate(),
+                                    cbuEmpresa: "3749500096817564", // modificar y poner el correcto
                                     descripcion: "Sueldo: " + start.get('date') + "/" + start.get('month') + "/" + start.get('year') + " - " + end.get('date') + "/" + end.get('month') + "/" + end.get('year'),
                                 }
                                 sueldosLiquidados.push(nuevoSueldo);
@@ -292,8 +295,14 @@ function paySalary(sueldoTotal, employee, start, end, transaction) {
     });
 }
 
-function bancoEndpointPagoSueldo(sueldosLiquidados) {
-    console.log(sueldosLiquidados);
+async function bancoEndpointPagoSueldo(sueldosLiquidados) {
+    const response = await fetch('https://iabackend.herokuapp.com/api/users/altasueldoM', {
+    	method: 'post',
+    	body: JSON.stringify(sueldosLiquidados),
+    	headers: {'Content-Type': 'application/json'}
+    });
+    const data = await response.json();
+    return data;
 }
 
 function getSubscriptions(req, res) {
