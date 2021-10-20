@@ -4,7 +4,6 @@ const sequelize = require('../models/index.js');
 const { Op } = require("sequelize");
 const fs = require('fs');
 var path = require('path');
-const { start } = require('repl');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 function getCurrentDate() {
@@ -111,16 +110,19 @@ function setSubscription(req, res) {
                             var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');
                             var tipo = "Efectivo";
                             var comprobante = "";
+
+                            const price = (subscriptionInfo.price * (100 - user.discount)) / 100;
+
                             if(req.body.tipo == 1) {
                                 tipo = "Tarjeta credito / debito";
-                                comprobante = req.body.comprobante;
+                                comprobante = paySubscription(price);
                             }
                             const newUserSubscription = {
                                 subscriptionType: subscriptionInfo.type,
                                 userID: user.id,
                                 receiptNumber: comprobante,
                                 paymentMethod: tipo,
-                                price: subscriptionInfo.price,
+                                price: price,
                                 startDate: start,
                                 endDate: end
                             }
@@ -184,14 +186,8 @@ function getUserSubscription(req, res) {
     });
 }
 
-async function paySubscription(metodo, res) {
-    if(metodo.tipo == 0) {
-        // efectivo
-        return "388473984858403085" // numero de comprobante
-    } else if(metodo.tipo == 1) {
-        // tarjeta credito / debito
-        return "473584720587910384" // numero de comprobante
-    }
+async function paySubscription() {
+    return "473584720587910384"
 }
 
 // periodo fecha de inicio y fecha de fin id

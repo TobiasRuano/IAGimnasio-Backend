@@ -24,7 +24,8 @@ function createUser(req, res){
                 email: req.body.email,
                 birthday: date,
                 address: req.body.address,
-                phone: req.body.phone
+                phone: req.body.phone,
+                discount: 0
             }
             if(req.body.type == 0) {
                 user.type = 0
@@ -76,6 +77,7 @@ async function newUsersFromSchool(req, res){
                         birthday: date,
                         address: users[i].direccion,
                         phone: users[i].telefono,
+                        discount: 20,
                         type: 0
                     }
 
@@ -187,6 +189,7 @@ function updateUser(req, res) {
                 email: req.body.email != null ? req.body.email : result.email,
                 address: req.body.address != null ? req.body.address : result.address,
                 phone: req.body.phone != null ? req.body.phone : result.phone,
+                discount: (req.body.discount != null && req.body.discount >= 0 && req.body.discount <= 100) ? req.body.discount : result.discount,
             }
             models.User.update(user, {where: {id: result.id}}).then(result => {
                 res.status(200).json({
