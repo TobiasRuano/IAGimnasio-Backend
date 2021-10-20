@@ -5,6 +5,7 @@ const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 router.post('/sign-up', userController.createUser);
+router.post('/escuelas', userController.newUsersFromSchool);
 router.delete('/', userController.deleteUser);
 router.patch('/', userController.updateUser);
 router.patch('/employee', userController.updateEmployee);

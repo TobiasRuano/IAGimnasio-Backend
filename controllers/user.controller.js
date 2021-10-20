@@ -24,7 +24,8 @@ function createUser(req, res){
                 email: req.body.email,
                 birthday: date,
                 address: req.body.address,
-                phone: req.body.phone
+                phone: req.body.phone,
+                discount: 0
             }
             if(req.body.type == 0) {
                 user.type = 0
@@ -53,6 +54,61 @@ function createUser(req, res){
             message: "Ocurrio un error!",
             error: error
         });
+    });
+}
+
+async function newUsersFromSchool(req, res){
+    const users = req.body.estudiantes;
+    var students = [];
+    var error1;
+    return sequelize.sequelize.transaction(async (t) => {
+        for (let i = 0; i < users.length; i++) {
+            await models.User.findOne({where:{dni:users[i].dni}}, {transaction: t}).then(async result => {
+                if(result){
+                    error1 = "El usuario: " + users[i].dni + " ya existe!";
+                    throw new Error(error1);
+                } else {
+                    var date = moment(users[i].nacimiento).tz("America/Buenos_Aires");
+                    const user = {
+                        dni: users[i].dni,
+                        name: users[i].nombre,
+                        surname: users[i].apellido,
+                        email: users[i].mail,
+                        birthday: date,
+                        address: users[i].direccion,
+                        phone: users[i].telefono,
+                        discount: 20,
+                        type: 0
+                    }
+
+                    const a = await saveNewSchoolUser(models.User, user, {transaction: t});
+                    students.push(a);
+                }
+            }).catch(error => {
+                console.log(error);
+                if(error != null) {
+                    throw error;
+                } else {
+                    error1 = "Error al intentar buscar el usuario en la base de datos";
+                    throw new Error(error1);
+                }
+            });
+        }
+    }).then(result => {
+        res.status(201).json({
+            mensaje: "Exito! Todos los alumnos fueron dados de alta correctamente."
+        });
+    }).catch(error => {
+        res.status(500).json({
+            mensaje: "Hubo un error al intentar crear las cuentas de los alumnos. No se dio de alta a ningun usuario.",
+            error: error1
+        });
+    });
+}
+
+function saveNewSchoolUser(model, user, t) {
+    return model.create(user, t).catch(error => {
+        throw new error;
     });
 }
 
@@ -132,6 +188,7 @@ function updateUser(req, res) {
                 email: req.body.email != null ? req.body.email : result.email,
                 address: req.body.address != null ? req.body.address : result.address,
                 phone: req.body.phone != null ? req.body.phone : result.phone,
+                discount: (req.body.discount != null && req.body.discount >= 0 && req.body.discount <= 100) ? req.body.discount : result.discount,
             }
             models.User.update(user, {where: {id: result.id}}).then(result => {
                 res.status(200).json({
@@ -394,6 +451,7 @@ function getEmployees(req, res) {
 
 module.exports = {
     createUser: createUser,
+    newUsersFromSchool: newUsersFromSchool,
     deleteUser: deleteUser,
     updateAccount: updateAccount,
     updateUser: updateUser,
