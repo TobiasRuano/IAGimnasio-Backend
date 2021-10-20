@@ -96,8 +96,7 @@ async function newUsersFromSchool(req, res){
         }
     }).then(result => {
         res.status(201).json({
-            mensaje: "Exito! Todos los alumnos fueron dados de alta correctamente.",
-            estudiantes: students
+            mensaje: "Exito! Todos los alumnos fueron dados de alta correctamente."
         });
     }).catch(error => {
         res.status(500).json({
