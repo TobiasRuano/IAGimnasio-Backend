@@ -58,7 +58,14 @@ function createUser(req, res){
 }
 
 async function newUsersFromSchool(req, res){
-    const users = req.body.estudiantes;
+    const users = [];
+    if(req.body.estudiantes.length == null) {
+        users.push(req.body.estudiantes);
+    } else {
+        for(let i = 0; i < req.body.estudiantes.length; i++) {
+            users.push(req.body.estudiantes[i]);
+        }
+    }
     var students = [];
     var error1;
     return sequelize.sequelize.transaction(async (t) => {
@@ -85,7 +92,6 @@ async function newUsersFromSchool(req, res){
                     students.push(a);
                 }
             }).catch(error => {
-                console.log(error);
                 if(error != null) {
                     throw error;
                 } else {
