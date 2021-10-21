@@ -220,7 +220,7 @@ async function calculatePayroll(req, res) {
                                     cbu: emp.cbu,
                                     importe: a.total,
                                     fechaPago: getCurrentDate(),
-                                    cbuEmpresa: "3749500096817564", // modificar y poner el correcto
+                                    cbuEmpresa: "158587380284183800000",
                                     descripcion: "Sueldo: " + start.get('date') + "/" + start.get('month') + "/" + start.get('year') + " - " + end.get('date') + "/" + end.get('month') + "/" + end.get('year'),
                                 }
                                 sueldosLiquidados.push(nuevoSueldo);
