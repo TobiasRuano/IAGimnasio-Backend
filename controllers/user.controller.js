@@ -68,9 +68,15 @@ async function newUsersFromSchool(req, res){
     }
     var students = [];
     var error1;
+    var dniErrorStatus = false;
     return sequelize.sequelize.transaction(async (t) => {
         for (let i = 0; i < users.length; i++) {
-            await models.User.findOne({where:{dni:users[i].dni}}, {transaction: t}).then(async result => {
+            if(!dniIsValid(users[i].dni)) {
+                dniErrorStatus = true;
+                throw new Error("El dni de uno de los alumnos no es correcto");
+            }
+            const dni = parseInt(users[i].dni);
+            await models.User.findOne({where:{dni:dni}}, {transaction: t}).then(async result => {
                 if(result){
                     error1 = "El usuario: " + users[i].dni + " ya existe!";
                     throw new Error(error1);
@@ -105,11 +111,35 @@ async function newUsersFromSchool(req, res){
             mensaje: "Exito! Todos los alumnos fueron dados de alta correctamente."
         });
     }).catch(error => {
-        res.status(500).json({
-            mensaje: "Hubo un error al intentar crear las cuentas de los alumnos. No se dio de alta a ningun usuario.",
-            error: error1
-        });
+        if(dniErrorStatus) {
+            res.status(400).json({
+                mensaje: "El dni de uno o mas alumnos no tiene el formato correcto. Debe tener 8 digitos, ser String y no comenzar con 0.",
+            });
+        } else {
+            res.status(500).json({
+                mensaje: "Hubo un error al intentar crear las cuentas de los alumnos. No se dio de alta a ningun usuario.",
+                error: error1
+            });
+        }
     });
+}
+
+function dniIsValid(dni) {
+    if(dni == null) {
+        console.log("No hay dni " + dni);
+        return false;
+    }
+
+    if(dni.charAt(0) == '0') {
+        console.log("Empieza con cero " + dni);
+        return false;
+    } else if(dni.length != 8) {
+        console.log("No es 8 " + dni);
+        return false;
+    } else {
+        console.log("Todo ok " + dni);
+        return true;
+    }
 }
 
 function saveNewSchoolUser(model, user, t) {
