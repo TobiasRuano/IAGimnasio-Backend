@@ -219,6 +219,8 @@ async function calculatePayroll(req, res) {
                                 const nuevoSueldo = {
                                     cbu: emp.cbu,
                                     importe: a.total,
+                                    codigo: a.id.toString(),
+                                    pagado: "Si",
                                     fechaPago: getCurrentDate(),
                                     cbuEmpresa: "158587380284183800000",
                                     descripcion: "Sueldo: " + start.get('date') + "/" + start.get('month') + "/" + start.get('year') + " - " + end.get('date') + "/" + end.get('month') + "/" + end.get('year'),
