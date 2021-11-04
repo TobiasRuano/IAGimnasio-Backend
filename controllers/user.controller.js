@@ -68,59 +68,50 @@ async function newUsersFromSchool(req, res){
     }
     var students = [];
     var error1;
-    var dniErrorStatus = false;
     return sequelize.sequelize.transaction(async (t) => {
         for (let i = 0; i < users.length; i++) {
-            if(!dniIsValid(users[i].dni)) {
-                dniErrorStatus = true;
-                throw new Error("El dni de uno de los alumnos no es correcto");
-            }
-            const dni = parseInt(users[i].dni);
-            await models.User.findOne({where:{dni:dni}}, {transaction: t}).then(async result => {
-                if(result){
-                    error1 = "El usuario: " + users[i].dni + " ya existe!";
-                    throw new Error(error1);
-                } else {
-                    var date = moment(users[i].nacimiento).tz("America/Buenos_Aires");
-                    const user = {
-                        dni: users[i].dni,
-                        name: users[i].nombre,
-                        surname: users[i].apellido,
-                        email: users[i].mail,
-                        birthday: date,
-                        address: users[i].direccion,
-                        phone: users[i].telefono,
-                        discount: 20,
-                        type: 0
-                    }
+            if(dniIsValid(users[i].dni)) {
+                const dni = parseInt(users[i].dni);
+                await models.User.findOne({where:{dni:dni}}, {transaction: t}).then(async result => {
+                    if(result){
+                        error1 = "El usuario: " + users[i].dni + " ya existe!";
+                        throw new Error(error1);
+                    } else {
+                        var date = moment(users[i].nacimiento).tz("America/Buenos_Aires");
+                        const user = {
+                            dni: users[i].dni,
+                            name: users[i].nombre,
+                            surname: users[i].apellido,
+                            email: users[i].mail,
+                            birthday: date,
+                            address: users[i].direccion,
+                            phone: users[i].telefono,
+                            discount: 20,
+                            type: 0
+                        }
 
-                    const a = await saveNewSchoolUser(models.User, user, {transaction: t});
-                    students.push(a);
-                }
-            }).catch(error => {
-                if(error != null) {
-                    throw error;
-                } else {
-                    error1 = "Error al intentar buscar el usuario en la base de datos";
-                    throw new Error(error1);
-                }
-            });
+                        const a = await saveNewSchoolUser(models.User, user, {transaction: t});
+                        students.push(a);
+                    }
+                }).catch(error => {
+                    if(error != null) {
+                        throw error;
+                    } else {
+                        error1 = "Error al intentar buscar el usuario en la base de datos";
+                        throw new Error(error1);
+                    }
+                });
+            }
         }
     }).then(result => {
         res.status(201).json({
             mensaje: "Exito! Todos los alumnos fueron dados de alta correctamente."
         });
     }).catch(error => {
-        if(dniErrorStatus) {
-            res.status(400).json({
-                mensaje: "El dni de uno o mas alumnos no tiene el formato correcto. Debe tener 8 digitos, ser String y no comenzar con 0.",
-            });
-        } else {
-            res.status(500).json({
-                mensaje: "Hubo un error al intentar crear las cuentas de los alumnos. No se dio de alta a ningun usuario.",
-                error: error1
-            });
-        }
+        res.status(500).json({
+            mensaje: "Hubo un error al intentar crear las cuentas de los alumnos. No se dio de alta a ningun usuario.",
+            error: error1
+        });
     });
 }
 
