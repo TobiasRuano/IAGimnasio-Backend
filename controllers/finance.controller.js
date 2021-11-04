@@ -6,6 +6,11 @@ const fs = require('fs');
 var path = require('path');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+const endpoints = {
+	TARJETAA: "https://viernes-ia.herokuapp.com/addConsumo",
+	BANCOB: "https://iabackend.herokuapp.com/api/users/altasueldoM"
+}
+
 function getCurrentDate() {
     var date = moment().tz("America/Buenos_Aires").format('YYYY-MM-DD');;
     return date;
@@ -104,7 +109,7 @@ function setSubscription(req, res) {
                         message: "El usuario ya posee una subscripcion activa."
                     });
                 } else {
-                    models.Subscription.findOne({where:{id:req.body.subscriptionID}}).then(subscriptionInfo => {
+                    models.Subscription.findOne({where:{id:req.body.subscriptionID}}).then(async subscriptionInfo => {
                         if(subscriptionInfo) {
                             var start = getCurrentDate();
                             var end = moment(start, "YYYY-MM-DD").add(subscriptionInfo.length, 'days');
@@ -113,43 +118,59 @@ function setSubscription(req, res) {
 
                             const price = (subscriptionInfo.price * (100 - user.discount)) / 100;
 
-                            if(req.body.tipo == 1) {
-                                tipo = "Tarjeta credito / debito";
-                                comprobante = paySubscription(price);
-                            }
-                            const newUserSubscription = {
-                                subscriptionType: subscriptionInfo.type,
-                                userID: user.id,
-                                receiptNumber: comprobante,
-                                paymentMethod: tipo,
-                                price: price,
-                                startDate: start,
-                                endDate: end
-                            }
-                            
-                            models.UserSubscription.create(newUserSubscription).then(result => {
-                                res.status(201).json({
-                                    message: "Usuario subscripto correctamente!",
-                                    data: result
+                            return sequelize.sequelize.transaction(async (t) => {
+                                if(req.body.tipo == 1) {
+                                    tipo = "Tarjeta credito / debito";
+                                    const datosCobranza = {
+                                        numero:req.body.numeroTarjeta,
+                                        cuit:"20-40495949-3",
+                                        codseg:req.body.codSeg,
+                                        precio: price,
+                                        descripcion:"Sportuo " + subscriptionInfo.type,
+                                        fechaven:req.body.fechaVencimiento
+                                    }
+                                    const respuesta = await externalApiConnection(datosCobranza, endpoints.TARJETAA, 'post');
+                                    console.log("La respuesta fuera es: " + respuesta);
+                                    comprobante = respuesta.comprobante.toString();
+                                }
+                                const newUserSubscription = {
+                                    subscriptionType: subscriptionInfo.type,
+                                    userID: user.id,
+                                    receiptNumber: comprobante,
+                                    paymentMethod: tipo,
+                                    price: price,
+                                    startDate: start,
+                                    endDate: end
+                                }
+                                
+                                models.UserSubscription.create(newUserSubscription).catch(error => {
+                                    res.status(500).json({
+                                        message: "Error al crear el abono",
+                                        error: error.message
+                                    });
+                                });
+                            }).then(result => {
+                                res.status(200).json({
+                                    message: "Usuario subscripto correctamente!"
                                 });
                             }).catch(error => {
                                 res.status(500).json({
-                                    message: "Error al crear el abono",
-                                    error: error
+                                    message: "Error al subscribir el abono al usuario.",
+                                    error: error.message
                                 });
                             });
                         }
                     }).catch(error => {
                         res.status(500).json({
                             message: "Error al Obtener la informacion de abono deseado",
-                            error: error
+                            error: error.message
                         });
                     });
                 }
             }).catch(error => {
                 res.status(500).json({
                     message: "Error al intentar obtener las subscripciones del usuario",
-                    error: error
+                    error: error.message
                 });
             });
         } else {
@@ -160,9 +181,23 @@ function setSubscription(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error al intentar obtener el usuario!",
-            error: error
+            error: error.message
         });
     });
+}
+
+async function externalApiConnection(datos, endpoint, metodo) {
+    const response = await fetch(endpoint, {
+    	method: metodo,
+    	body: JSON.stringify(datos),
+    	headers: {'Content-Type': 'application/json'}
+    });
+    console.log(response);
+    if(response.status != 201) {
+        throw new Error("Error en el endpoint: " + endpoint);
+    } else {
+        return await response.json();
+    }
 }
 
 function getUserSubscription(req, res) {
@@ -184,10 +219,6 @@ function getUserSubscription(req, res) {
             error: error
         });
     });
-}
-
-async function paySubscription() {
-    return "473584720587910384"
 }
 
 // periodo fecha de inicio y fecha de fin id
@@ -250,7 +281,7 @@ async function calculatePayroll(req, res) {
             });
         }
 
-        await bancoEndpointPagoSueldo(sueldosLiquidados);
+        await externalApiConnection(sueldosLiquidados, endpoints.BANCOB, 'post');
 
         }).then(result => {
             res.status(200).json({
@@ -291,16 +322,6 @@ function paySalary(sueldoTotal, employee, start, end, transaction) {
         console.log("Error al intentar liquidar el sueldo del id: " + employee.id);
         throw new Error();
     });
-}
-
-async function bancoEndpointPagoSueldo(sueldosLiquidados) {
-    const response = await fetch('https://iabackend.herokuapp.com/api/users/altasueldoM', {
-    	method: 'post',
-    	body: JSON.stringify(sueldosLiquidados),
-    	headers: {'Content-Type': 'application/json'}
-    });
-    const data = await response.json();
-    return data;
 }
 
 function getSubscriptions(req, res) {
