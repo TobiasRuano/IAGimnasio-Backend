@@ -67,41 +67,29 @@ async function newUsersFromSchool(req, res){
         }
     }
     var students = [];
-    var error1;
     return sequelize.sequelize.transaction(async (t) => {
         for (let i = 0; i < users.length; i++) {
-            if(dniIsValid(users[i].dni)) {
-                const dni = parseInt(users[i].dni);
-                await models.User.findOne({where:{dni:dni}}, {transaction: t}).then(async result => {
-                    if(result){
-                        error1 = "El usuario: " + users[i].dni + " ya existe!";
-                        throw new Error(error1);
-                    } else {
-                        var date = moment(users[i].nacimiento).tz("America/Buenos_Aires");
-                        const user = {
-                            dni: users[i].dni,
-                            name: users[i].nombre,
-                            surname: users[i].apellido,
-                            email: users[i].mail,
-                            birthday: date,
-                            address: users[i].direccion,
-                            phone: users[i].telefono,
-                            discount: 20,
-                            type: 0
-                        }
-
-                        const a = await saveNewSchoolUser(models.User, user, {transaction: t});
-                        students.push(a);
+            const dni = parseInt(users[i].dni);
+            await models.User.findOne({where:{dni:dni}}, {transaction: t}).then(async result => {
+                if(!result){
+                    var date = moment(users[i].nacimiento).tz("America/Buenos_Aires");
+                    const user = {
+                        dni: users[i].dni,
+                        name: dni,
+                        surname: users[i].apellido,
+                        email: users[i].mail,
+                        birthday: date,
+                        address: users[i].direccion,
+                        phone: users[i].telefono,
+                        discount: 20,
+                        type: 0
                     }
-                }).catch(error => {
-                    if(error != null) {
-                        throw error;
-                    } else {
-                        error1 = "Error al intentar buscar el usuario en la base de datos";
-                        throw new Error(error1);
-                    }
-                });
-            }
+                    const a = await saveNewSchoolUser(models.User, user, {transaction: t});
+                    students.push(a);
+                }
+            }).catch(error => {
+                throw error;
+            });
         }
     }).then(result => {
         res.status(201).json({
@@ -110,7 +98,7 @@ async function newUsersFromSchool(req, res){
     }).catch(error => {
         res.status(500).json({
             mensaje: "Hubo un error al intentar crear las cuentas de los alumnos. No se dio de alta a ningun usuario.",
-            error: error1
+            error: error.message
         });
     });
 }
