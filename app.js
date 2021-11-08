@@ -11,7 +11,11 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({
     extended: false
 }));
-app.use(cors());
+
+var corsOptions = {
+    origin: '*'
+}
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
     res.send('Gimnasio!')
