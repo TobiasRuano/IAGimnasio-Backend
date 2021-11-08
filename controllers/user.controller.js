@@ -59,7 +59,12 @@ function createUser(req, res){
 
 async function newUsersFromSchool(req, res){
     const users = [];
-    if(req.body.estudiantes.length == null) {
+    console.log(req)
+    console.log("Bodyy!!!")
+    console.log(req.body)
+    console.log("Estudiantes!!!")
+    console.log(req.estudiantes)
+    if(!Array.isArray(req.body.estudiantes.length)) {
         users.push(req.body.estudiantes);
     } else {
         for(let i = 0; i < req.body.estudiantes.length; i++) {
