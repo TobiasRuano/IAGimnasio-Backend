@@ -15,7 +15,13 @@ app.use(express.urlencoded({
 var corsOptions = {
     'Access-Control-Allow-Origin': '*'
 }
-app.use(cors(corsOptions));
+app.use(cors({
+    'allowedHeaders': ['sessionId', 'Content-Type'],
+    'exposedHeaders': ['sessionId'],
+    'origin': '*',
+    'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    'preflightContinue': false
+  }));
 
 app.get('/', (req, res) => {
     res.send('Gimnasio!')
