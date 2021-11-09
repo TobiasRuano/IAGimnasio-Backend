@@ -13,7 +13,7 @@ app.use(express.urlencoded({
 }));
 
 var corsOptions = {
-    origin: '*'
+    'Access-Control-Allow-Origin': '*'
 }
 app.use(cors(corsOptions));
 
