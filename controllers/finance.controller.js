@@ -36,14 +36,14 @@ function createSubscription(req, res) {
                     data: result2
                 });
             }).catch(error => {
-                res.status(500).json({
+                res.status(400).json({
                     message: "Ocurrio un error al crear el abono!",
                     error: error.message
                 });
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Something went wrong!",
             error: error.message
         });
@@ -61,7 +61,7 @@ function updateSubscription(req, res) {
                     message: "Abono actualizado correctamente!"
                 });
             }).catch(error => {
-                res.status(500).json({
+                res.status(400).json({
                     message: "Ocurrio un error!",
                     error: error.message
                 });
@@ -72,7 +72,7 @@ function updateSubscription(req, res) {
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error. Pusiste bien los datos en el body?",
             error: error.message
         });
@@ -91,7 +91,7 @@ function deleteSubscriptions(req, res) {
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Something went wrong!",
             error: error.message
         });
@@ -105,7 +105,7 @@ function setSubscription(req, res) {
             var sqlString = fs.readFileSync(sqlPath, 'utf8');
             sequelize.sequelize.query(sqlString, {replacements: {id: user.id, today: getCurrentDate()}}).then(([userSubscription, metadata]) =>{
                 if(userSubscription.length != 0) {
-                    res.status(500).json({
+                    res.status(400).json({
                         message: "El usuario ya posee una subscripcion activa."
                     });
                 } else {
@@ -144,7 +144,7 @@ function setSubscription(req, res) {
                                 }
                                 
                                 models.UserSubscription.create(newUserSubscription).catch(error => {
-                                    res.status(500).json({
+                                    res.status(400).json({
                                         message: "Error al crear el abono",
                                         error: error.message
                                     });
@@ -154,21 +154,21 @@ function setSubscription(req, res) {
                                     message: "Usuario subscripto correctamente!"
                                 });
                             }).catch(error => {
-                                res.status(500).json({
+                                res.status(400).json({
                                     message: "Error al subscribir el abono al usuario.",
                                     error: error.message
                                 });
                             });
                         }
                     }).catch(error => {
-                        res.status(500).json({
+                        res.status(400).json({
                             message: "Error al Obtener la informacion de abono deseado",
                             error: error.message
                         });
                     });
                 }
             }).catch(error => {
-                res.status(500).json({
+                res.status(400).json({
                     message: "Error al intentar obtener las subscripciones del usuario",
                     error: error.message
                 });
@@ -179,7 +179,7 @@ function setSubscription(req, res) {
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error al intentar obtener el usuario!",
             error: error.message
         });
@@ -215,7 +215,7 @@ function getUserSubscription(req, res) {
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error al intentar obtener el usuario!",
             error: error.message
         });
@@ -224,8 +224,8 @@ function getUserSubscription(req, res) {
 
 // periodo fecha de inicio y fecha de fin id
 async function calculatePayroll(req, res) {
-    const start = moment(req.body.fechaInicio, "YYYY-MM-DD hh:mm:ss");
-    var end = moment(start, "YYYY-MM-DD").add(30, 'days');
+    const end = moment(req.body.fechaFin, "YYYY-MM-DD hh:mm:ss");
+    var start = moment(start, "YYYY-MM-DD").startdate.subtract(30, 'days');
 
     models.Employee.findAll().then( employees => {
         return sequelize.sequelize.transaction(async (t) => {
@@ -289,14 +289,14 @@ async function calculatePayroll(req, res) {
                 message: "Todos los sueldos fueron liquidados!"
             });
         }).catch(error => {
-            res.status(500).json({
+            res.status(400).json({
                 message: "Error al intentar liquidar los sueldos.",
                 more: "Posiblemente esten mal los ID's de los empleados, o algun empleado ya tuvo su sueldo liquidado.",
                 error: error.message
             });
         });
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Error al intentar liquidar los sueldos.",
             more: "No se pudieron obtener los empleados.",
             error: error.message
@@ -333,12 +333,12 @@ function getSubscriptions(req, res) {
                 data: result
             });
         } else {
-            res.status(500).json({
+            res.status(400).json({
                 message: "No hay abonos creados!"
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error!",
             error: error.message
         });

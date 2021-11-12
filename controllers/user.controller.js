@@ -43,14 +43,14 @@ function createUser(req, res){
                 user.hoursWorked = 160
                 saveNewUser(models.Employee, user, res, "Administrador creado exitosamente!");
             } else {
-                res.status(500).json({
+                res.status(400).json({
                     message: "Ocurrio un error!",
                     error: "El tipo de usuario a crear no fue dado. 0 para usuario normal, 1 para entrenador, 2 para admin."
                 });
             }
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error!",
             error: error.message
         });
@@ -97,7 +97,7 @@ async function newUsersFromSchool(req, res){
             mensaje: "Exito! Todos los alumnos fueron dados de alta correctamente."
         });
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             mensaje: "Hubo un error al intentar crear las cuentas de los alumnos. No se dio de alta a ningun usuario.",
             error: error.message
         });
@@ -135,7 +135,7 @@ function saveNewUser(model, user, res, mes) {
             data: result
         });
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error!",
             error: error.message
         });
@@ -158,7 +158,7 @@ function updateUser(req, res) {
                     message: "Usuario actualizado correctamente!"
                 });
             }).catch(error => {
-                res.status(500).json({
+                res.status(400).json({
                    message: "Ocurrio un error!",
                    error: error.message
                });
@@ -169,7 +169,7 @@ function updateUser(req, res) {
             });
         }
     }).catch(error => {
-       res.status(500).json({
+       res.status(400).json({
            message: "Ocurrio un error. Pusiste bien los datos en el body?",
            error: error.message
        });
@@ -192,7 +192,7 @@ function updateEmployee(req, res) {
                     message: "Empleado actualizado correctamente!"
                 });
             }).catch(error => {
-                res.status(500).json({
+                res.status(400).json({
                     message: "Ocurrio un error!",
                     error: error.message
                 });
@@ -203,7 +203,7 @@ function updateEmployee(req, res) {
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error. Pusiste bien los datos en el body?",
             error: error.message
         });
@@ -222,7 +222,7 @@ function deleteUser(req, res) {
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Something went wrong!",
             error: error.message
         });
@@ -241,7 +241,7 @@ function deleteEmployee(req, res) {
                     });
                 }
             }).catch(error => {
-                res.status(500).json({
+                res.status(400).json({
                     message: "Something went wrong!",
                     error: error.message
                 });
@@ -250,7 +250,7 @@ function deleteEmployee(req, res) {
             removeEmployee(req.body.id, res);
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Something went wrong!",
             error: error.message
         });
@@ -269,7 +269,7 @@ function removeEmployee(id, res){
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Something went wrong!",
             error: error.message
         });
@@ -303,12 +303,12 @@ function getAllUsers(req, res) {
                 }
             });
         } else {
-            res.status(500).json({
+            res.status(400).json({
                 message: "Ocurrio un error!"
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error!",
             error: error.message
         });
@@ -337,7 +337,7 @@ function setHealthRecord(req, res) {
                             data: result2
                         });
                     }).catch(error => {
-                        res.status(500).json({
+                        res.status(400).json({
                             message: "Ocurrio un error!",
                             error: error.message
                         });
@@ -349,14 +349,14 @@ function setHealthRecord(req, res) {
                             data: result3
                         });
                     }).catch(error => {
-                        res.status(500).json({
+                        res.status(400).json({
                             message: "Ocurrio un error!",
                             error: error.message
                         });
                     });
                 }
             }).catch(error => {
-                res.status(500).json({
+                res.status(400).json({
                     message: "Ocurrio un error!",
                     error: error.message
                 });
@@ -367,7 +367,7 @@ function setHealthRecord(req, res) {
             });
         }
     }).catch(error =>{
-        res.status(500).json({
+        res.status(400).json({
             message: "Ocurrio un error!",
             error: error.message
         });
@@ -382,7 +382,7 @@ function getTrainners(req, res) {
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Something went wrong!",
             error: error.message
         });
@@ -397,7 +397,7 @@ function getEmployees(req, res) {
             });
         }
     }).catch(error => {
-        res.status(500).json({
+        res.status(400).json({
             message: "Something went wrong!",
             error: error.message
         });
