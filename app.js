@@ -13,7 +13,7 @@ app.use(express.urlencoded({
 }));
 
 var corsOptions = {
-    'origin': 'https://tiepolo.vercel.app'
+    'origin': '*'
 }
 app.use(cors(corsOptions));
 
