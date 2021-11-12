@@ -59,21 +59,17 @@ function createUser(req, res){
 
 async function newUsersFromSchool(req, res){
     const users = [];
-    console.log("Bodyy!!!")
-    console.log(req.body)
     console.log("Estudiantes!!!")
     console.log(req.body.estudiantes)
-    if(!Array.isArray(req.body.estudiantes.length)) {
-        users.push(req.body.estudiantes);
-    } else {
-        for(let i = 0; i < req.body.estudiantes.length; i++) {
-            users.push(req.body.estudiantes[i]);
-        }
+    for(let i = 0; i < req.body.estudiantes.length; i++) {
+        users.push(req.body.estudiantes[i]);
     }
     var students = [];
     return sequelize.sequelize.transaction(async (t) => {
         for (let i = 0; i < users.length; i++) {
             const dni = parseInt(users[i].dni);
+            console.log("DNI String: " + users[i].dni)
+            console.log("DNI Int " + dni)
             await models.User.findOne({where:{dni:dni}}, {transaction: t}).then(async result => {
                 if(!result){
                     var date = moment(users[i].nacimiento).tz("America/Buenos_Aires");
@@ -92,6 +88,7 @@ async function newUsersFromSchool(req, res){
                     students.push(a);
                 }
             }).catch(error => {
+                console.log("Error: " + error.message)
                 throw error;
             });
         }
