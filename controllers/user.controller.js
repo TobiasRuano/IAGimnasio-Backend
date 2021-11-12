@@ -75,7 +75,7 @@ async function newUsersFromSchool(req, res){
                     var date = moment(users[i].nacimiento).tz("America/Buenos_Aires");
                     const user = {
                         dni: users[i].dni,
-                        name: dni,
+                        name: users[i].nombre,
                         surname: users[i].apellido,
                         email: users[i].mail,
                         birthday: date,
