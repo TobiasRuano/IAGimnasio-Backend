@@ -52,7 +52,7 @@ function createUser(req, res){
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -137,60 +137,7 @@ function saveNewUser(model, user, res, mes) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
-        });
-    });
-}
-
-// actualizar usuario
-function updateAccount(req, res) {
-    const value = parseInt(req.body.type);
-    switch (value) {
-        case 0:
-            update(models.User, req, res);
-            break;
-        case 1:
-            update(models.Employee, req, res);
-            break;
-        case 2:
-            update(models.Employee, req, res);
-            break;
-        default:
-            res.status(500).json({
-                message: "Chequea que el type de la cuenta sea correcto"
-            });
-    }
-}
-
-function update(model, req , res) {
-    model.findOne({where:{id:req.body.id}}).then(result => {
-        if(result) {
-            const account = {
-                name: req.body.name != null ? req.body.name : result.name,
-                surname: req.body.surname != null ? req.body.surname : result.surname,
-                email: req.body.email != null ? req.body.email : result.email,
-                address: req.body.address != null ? req.body.address : result.address,
-                phone: req.body.phone != null ? req.body.phone : result.phone
-            }
-            model.update(account, {where: {id: result.id}}).then(result2 => {
-                res.status(200).json({
-                    message: "Cuenta actualizado correctamente!"
-                });
-            }).catch(error => {
-                res.status(500).json({
-                    message: "Ocurrio un error!",
-                    error: error
-                });
-            });
-        } else {
-            res.status(404).json({
-                message: "No se encontro la cuenta deseada"
-            });
-        }
-    }).catch(error => {
-        res.status(500).json({
-            message: "Ocurrio un error. Pusiste bien los datos en el body?",
-            error: error
+            error: error.message
         });
     });
 }
@@ -213,7 +160,7 @@ function updateUser(req, res) {
             }).catch(error => {
                 res.status(500).json({
                    message: "Ocurrio un error!",
-                   error: error
+                   error: error.message
                });
             });
         } else {
@@ -224,7 +171,7 @@ function updateUser(req, res) {
     }).catch(error => {
        res.status(500).json({
            message: "Ocurrio un error. Pusiste bien los datos en el body?",
-           error: error
+           error: error.message
        });
    });
 }
@@ -247,7 +194,7 @@ function updateEmployee(req, res) {
             }).catch(error => {
                 res.status(500).json({
                     message: "Ocurrio un error!",
-                    error: error
+                    error: error.message
                 });
             });
         } else {
@@ -258,7 +205,7 @@ function updateEmployee(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error. Pusiste bien los datos en el body?",
-            error: error
+            error: error.message
         });
     });
 }
@@ -277,7 +224,7 @@ function deleteUser(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -296,7 +243,7 @@ function deleteEmployee(req, res) {
             }).catch(error => {
                 res.status(500).json({
                     message: "Something went wrong!",
-                    error: error
+                    error: error.message
                 });
             });
         } else {
@@ -305,7 +252,7 @@ function deleteEmployee(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -324,7 +271,7 @@ function removeEmployee(id, res){
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -362,7 +309,8 @@ function getAllUsers(req, res) {
         }
     }).catch(error => {
         res.status(500).json({
-            message: "Ocurrio un error!"
+            message: "Ocurrio un error!",
+            error: error.message
         });
     });
 }
@@ -391,7 +339,7 @@ function setHealthRecord(req, res) {
                     }).catch(error => {
                         res.status(500).json({
                             message: "Ocurrio un error!",
-                            error: error
+                            error: error.message
                         });
                     });
                 } else {
@@ -403,25 +351,25 @@ function setHealthRecord(req, res) {
                     }).catch(error => {
                         res.status(500).json({
                             message: "Ocurrio un error!",
-                            error: error
+                            error: error.message
                         });
                     });
                 }
             }).catch(error => {
                 res.status(500).json({
                     message: "Ocurrio un error!",
-                    error: error
+                    error: error.message
                 });
             });
         } else {
-            res.status(500).json({
+            res.status(404).json({
                 message: "No existe un usuario con el ID dado"
             });
         }
     }).catch(error =>{
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -432,16 +380,11 @@ function getTrainners(req, res) {
             res.status(200).json({
                 data: result
             });
-        } else {
-            res.status(500).json({
-                message: "Ocurrio un error!",
-                error: error
-            });
         }
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -452,15 +395,11 @@ function getEmployees(req, res) {
             res.status(200).json({
                 data: result
             });
-        } else {
-            res.status(500).json({
-                message: "Ocurrio un error"
-            });
         }
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -469,7 +408,6 @@ module.exports = {
     createUser: createUser,
     newUsersFromSchool: newUsersFromSchool,
     deleteUser: deleteUser,
-    updateAccount: updateAccount,
     updateUser: updateUser,
     updateEmployee: updateEmployee,
     deleteEmployee: deleteEmployee,

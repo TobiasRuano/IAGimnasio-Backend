@@ -36,16 +36,16 @@ function createSubscription(req, res) {
                     data: result2
                 });
             }).catch(error => {
-                res.status(501).json({
+                res.status(500).json({
                     message: "Ocurrio un error al crear el abono!",
-                    error: error
+                    error: error.message
                 });
             });
         }
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -63,7 +63,7 @@ function updateSubscription(req, res) {
             }).catch(error => {
                 res.status(500).json({
                     message: "Ocurrio un error!",
-                    error: error
+                    error: error.message
                 });
             });
         } else {
@@ -74,7 +74,7 @@ function updateSubscription(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error. Pusiste bien los datos en el body?",
-            error: error
+            error: error.message
         });
     });
 }
@@ -93,7 +93,7 @@ function deleteSubscriptions(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -187,6 +187,7 @@ function setSubscription(req, res) {
 }
 
 async function externalApiConnection(datos, endpoint, metodo) {
+    console.log(datos);
     const response = await fetch(endpoint, {
     	method: metodo,
     	body: JSON.stringify(datos),
@@ -216,7 +217,7 @@ function getUserSubscription(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error al intentar obtener el usuario!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -251,10 +252,10 @@ async function calculatePayroll(req, res) {
                                     cbu: emp.cbu,
                                     importe: a.total,
                                     codigo: a.id.toString(),
-                                    pagado: "Si",
+                                    pagado: "0",
                                     fechaPago: getCurrentDate(),
                                     cbuEmpresa: "158587380284183800000",
-                                    descripcion: "Sueldo: " + start.get('date') + "/" + start.get('month') + "/" + start.get('year') + " - " + end.get('date') + "/" + end.get('month') + "/" + end.get('year'),
+                                    descripcion: emp.name + " " + emp.surname + " : " + start.get('date') + "/" + start.get('month') + "/" + start.get('year') + " - " + end.get('date') + "/" + end.get('month') + "/" + end.get('year'),
                                 }
                                 sueldosLiquidados.push(nuevoSueldo);
 
@@ -290,14 +291,15 @@ async function calculatePayroll(req, res) {
         }).catch(error => {
             res.status(500).json({
                 message: "Error al intentar liquidar los sueldos.",
-                more: "Posiblemente esten mal los ID's de los empleados, o algun empleado ya tuvo su sueldo liquidado."
+                more: "Posiblemente esten mal los ID's de los empleados, o algun empleado ya tuvo su sueldo liquidado.",
+                error: error.message
             });
         });
     }).catch(error => {
         res.status(500).json({
             message: "Error al intentar liquidar los sueldos.",
             more: "No se pudieron obtener los empleados.",
-            error: error
+            error: error.message
         });
     });
 }
@@ -338,7 +340,7 @@ function getSubscriptions(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
+            error: error.message
         });
     });
 }

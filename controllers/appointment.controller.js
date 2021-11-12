@@ -24,14 +24,14 @@ function createNewAppointments(req, res) {
             }).catch(error => {
                 res.status(500).json({
                     message: "Ocurrio un error!",
-                    error: error
+                    error: error.message
                 });
             });
         }
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -53,7 +53,7 @@ function updateAppointment(req, res) {
             }).catch(error => {
                 res.status(500).json({
                     message: "Ocurrio un error!",
-                    error: error
+                    error: error.message
                 });
             });
         } else {
@@ -64,7 +64,7 @@ function updateAppointment(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error. Pusiste bien los datos en el body?",
-            error: error
+            error: error.message
         });
     });
 }
@@ -83,7 +83,7 @@ function deleteAppointment(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Something went wrong!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -94,15 +94,11 @@ function getClasesByTrainnerID(req, res) {
             res.status(200).json({
                 data: result
             });
-        } else {
-            res.status(404).json({
-                message: "Ocurrio un error!"
-            });
         }
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -117,7 +113,7 @@ function getAllClases(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
+            error: error.message
         });
     });
 }
@@ -137,7 +133,7 @@ function setAppointment(req, res) {
             }).catch(error => {
                 res.status(500).json({
                     message: "No se pudo asignar la clase.",
-                    error: error
+                    error: error.message
                 });
             });
         } else {
@@ -148,7 +144,7 @@ function setAppointment(req, res) {
     }).catch(error => {
         res.status(500).json({
             message: "Ocurrio un error!",
-            error: error
+            error: error.message
         });
     });
 }
