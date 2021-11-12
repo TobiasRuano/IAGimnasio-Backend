@@ -59,11 +59,10 @@ function createUser(req, res){
 
 async function newUsersFromSchool(req, res){
     const users = [];
-    console.log(req)
     console.log("Bodyy!!!")
     console.log(req.body)
     console.log("Estudiantes!!!")
-    console.log(req.estudiantes)
+    console.log(req.body.estudiantes)
     if(!Array.isArray(req.body.estudiantes.length)) {
         users.push(req.body.estudiantes);
     } else {
