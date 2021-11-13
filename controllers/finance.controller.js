@@ -195,7 +195,7 @@ async function externalApiConnection(datos, endpoint, metodo) {
     });
     console.log(response);
     if(response.status != 201) {
-        throw new Error("Error en el endpoint: " + endpoint);
+        throw new Error("Error en el endpoint: " + endpoint + response.message);
     } else {
         return await response.json();
     }
@@ -224,8 +224,11 @@ function getUserSubscription(req, res) {
 
 // periodo fecha de inicio y fecha de fin id
 async function calculatePayroll(req, res) {
-    const end = moment(req.body.fechaFin, "YYYY-MM-DD hh:mm:ss");
-    var start = moment(end, "YYYY-MM-DD").subtract(30, 'days');
+    const frontDate = moment(req.body.fechaFin, "YYYY-MM-DD hh:mm:ss");
+
+    var date = new Date()
+    var start = new Date(date.getFullYear(), frontDate.month(), 1);
+    var end = new Date(date.getFullYear(), frontDate.month() + 1, 0);
 
     models.Employee.findAll().then( employees => {
         return sequelize.sequelize.transaction(async (t) => {
@@ -255,7 +258,7 @@ async function calculatePayroll(req, res) {
                                     pagado: "0",
                                     fechaPago: getCurrentDate(),
                                     cbuEmpresa: "158587380284183800000",
-                                    descripcion: emp.name + " " + emp.surname + " : " + start.get('date') + "/" + start.get('month') + "/" + start.get('year') + " - " + end.get('date') + "/" + end.get('month') + "/" + end.get('year'),
+                                    descripcion: emp.name + " " + emp.surname + " : " + start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear() + " - " + end.getDate() + "/" + (end.getMonth() + 1) + "/" + end.getFullYear(),
                                 }
                                 sueldosLiquidados.push(nuevoSueldo);
 
