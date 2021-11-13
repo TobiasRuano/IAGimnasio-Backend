@@ -225,7 +225,7 @@ function getUserSubscription(req, res) {
 // periodo fecha de inicio y fecha de fin id
 async function calculatePayroll(req, res) {
     const end = moment(req.body.fechaFin, "YYYY-MM-DD hh:mm:ss");
-    var start = moment(start, "YYYY-MM-DD").startdate.subtract(30, 'days');
+    var start = moment(end, "YYYY-MM-DD").subtract(30, 'days');
 
     models.Employee.findAll().then( employees => {
         return sequelize.sequelize.transaction(async (t) => {
