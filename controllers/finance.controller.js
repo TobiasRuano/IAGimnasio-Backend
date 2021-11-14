@@ -187,15 +187,14 @@ function setSubscription(req, res) {
 }
 
 async function externalApiConnection(datos, endpoint, metodo) {
-    console.log(datos);
     const response = await fetch(endpoint, {
     	method: metodo,
     	body: JSON.stringify(datos),
     	headers: {'Content-Type': 'application/json'}
     });
-    console.log(response);
     if(response.status != 201) {
-        throw new Error("Error en el endpoint: " + endpoint + response.message);
+        const respuesta = await response.json()
+        throw new Error("Error en el endpoint: " + endpoint + " Respuesta: " +  respuesta.response);
     } else {
         return await response.json();
     }
