@@ -151,7 +151,9 @@ function setSubscription(req, res) {
                                 });
                             }).then(result => {
                                 res.status(200).json({
-                                    message: "Usuario subscripto correctamente!"
+                                    message: "Usuario subscripto correctamente!",
+                                    monto: price,
+                                    abono: subscriptionInfo.type
                                 });
                             }).catch(error => {
                                 res.status(400).json({
