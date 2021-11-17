@@ -332,10 +332,6 @@ function getSubscriptions(req, res) {
             res.status(200).json({
                 data: result
             });
-        } else {
-            res.status(400).json({
-                message: "No hay abonos creados!"
-            });
         }
     }).catch(error => {
         res.status(400).json({
