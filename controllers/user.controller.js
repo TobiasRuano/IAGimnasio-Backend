@@ -104,24 +104,6 @@ async function newUsersFromSchool(req, res){
     });
 }
 
-function dniIsValid(dni) {
-    if(dni == null) {
-        console.log("No hay dni " + dni);
-        return false;
-    }
-
-    if(dni.charAt(0) == '0') {
-        console.log("Empieza con cero " + dni);
-        return false;
-    } else if(dni.length != 8) {
-        console.log("No es 8 " + dni);
-        return false;
-    } else {
-        console.log("Todo ok " + dni);
-        return true;
-    }
-}
-
 function saveNewSchoolUser(model, user, t) {
     return model.create(user, t).catch(error => {
         throw new error;
