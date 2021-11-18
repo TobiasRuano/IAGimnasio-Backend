@@ -258,7 +258,8 @@ async function calculatePayroll(req, res) {
 
                                 return a
                             } else {
-                                const m = "El empleado: " + emp.id + " ya tenia un sueldo liquidado.";
+                                console.log("El empleado: " + emp.id + " ya tenia un sueldo liquidado.")
+                                const m = "Ya se liquidaron los sueldos de este mes.";
                                 throw new Error(m);
                             }
                         }).catch( error => {
