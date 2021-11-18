@@ -145,8 +145,7 @@ function setSubscription(req, res) {
                                 
                                 models.UserSubscription.create(newUserSubscription).catch(error => {
                                     res.status(400).json({
-                                        message: "Error al crear el abono",
-                                        error: error.message
+                                        message: "Error al crear el abono. " + error.message
                                     });
                                 });
                             }).then(result => {
@@ -157,22 +156,19 @@ function setSubscription(req, res) {
                                 });
                             }).catch(error => {
                                 res.status(400).json({
-                                    message: "Error al subscribir el abono al usuario.",
-                                    error: error.message
+                                    message: "Error al subscribir el abono al usuario. " + error.message
                                 });
                             });
                         }
                     }).catch(error => {
                         res.status(400).json({
-                            message: "Error al Obtener la informacion de abono deseado",
-                            error: error.message
+                            message: "Error al Obtener la informacion de abono deseado. " + error.message
                         });
                     });
                 }
             }).catch(error => {
                 res.status(400).json({
-                    message: "Error al intentar obtener las subscripciones del usuario",
-                    error: error.message
+                    message: "Error al intentar obtener las subscripciones del usuario." + error.message
                 });
             });
         } else {
@@ -182,8 +178,7 @@ function setSubscription(req, res) {
         }
     }).catch(error => {
         res.status(400).json({
-            message: "Ocurrio un error al intentar obtener el usuario!",
-            error: error.message
+            message: "Ocurrio un error al intentar obtener el usuario!. " + error.message
         });
     });
 }
@@ -292,16 +287,12 @@ async function calculatePayroll(req, res) {
             });
         }).catch(error => {
             res.status(400).json({
-                message: "Error al intentar liquidar los sueldos.",
-                more: "Posiblemente esten mal los ID's de los empleados, o algun empleado ya tuvo su sueldo liquidado.",
-                error: error.message
+                message: error.message
             });
         });
     }).catch(error => {
         res.status(400).json({
-            message: "Error al intentar liquidar los sueldos.",
-            more: "No se pudieron obtener los empleados.",
-            error: error.message
+            message: "No se pudieron obtener los empleados. " + error.message
         });
     });
 }
