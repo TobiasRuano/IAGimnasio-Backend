@@ -259,8 +259,6 @@ async function calculatePayroll(req, res) {
                                 return a
                             } else {
                                 console.log("El empleado: " + emp.id + " ya tenia un sueldo liquidado.")
-                                const m = "Ya se liquidaron los sueldos de este mes.";
-                                throw new Error(m);
                             }
                         }).catch( error => {
                             error1 = error;
@@ -280,7 +278,9 @@ async function calculatePayroll(req, res) {
             });
         }
 
-        await externalApiConnection(sueldosLiquidados, endpoints.BANCOB, 'post');
+        if(sueldosLiquidados.length > 0) {
+            await externalApiConnection(sueldosLiquidados, endpoints.BANCOB, 'post');
+        }
 
         }).then(result => {
             res.status(200).json({
